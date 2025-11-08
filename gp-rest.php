@@ -23,6 +23,8 @@
  * @package Meloniq\GpRest
  */
 
+namespace Meloniq\GpRest;
+
 // If this file is accessed directly, then abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -31,3 +33,18 @@ if ( ! defined( 'WPINC' ) ) {
 define( 'GPREST_TD', 'gp-rest' );
 define( 'GPREST_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GPREST_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+
+/**
+ * GP Init Setup.
+ *
+ * @return void
+ */
+function gp_init() {
+	global $gprest_endpoints;
+
+	require_once __DIR__ . '/src/class-gp-rest-controller.php';
+	require_once __DIR__ . '/src/class-gp-rest-settings-controller.php';
+
+	$gprest_endpoints['settings'] = new GP_REST_Settings_Controller();
+}
+add_action( 'gp_init', 'Meloniq\GpRest\gp_init' );
