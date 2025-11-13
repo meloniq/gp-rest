@@ -42,9 +42,13 @@ define( 'GPREST_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 function gp_init() {
 	global $gprest_endpoints;
 
+	require_once __DIR__ . '/src/trait-gp-profile-helper.php';
+
 	require_once __DIR__ . '/src/class-gp-rest-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-settings-controller.php';
+	require_once __DIR__ . '/src/class-gp-rest-profile-controller.php';
 
 	$gprest_endpoints['settings'] = new GP_REST_Settings_Controller();
+	$gprest_endpoints['profile']  = new GP_REST_Profile_Controller();
 }
 add_action( 'gp_init', 'Meloniq\GpRest\gp_init' );
