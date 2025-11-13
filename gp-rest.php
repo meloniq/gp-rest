@@ -45,10 +45,13 @@ function gp_init() {
 	require_once __DIR__ . '/src/trait-gp-profile-helper.php';
 
 	require_once __DIR__ . '/src/class-gp-rest-controller.php';
+	require_once __DIR__ . '/src/class-gp-rest-languages-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-settings-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-profile-controller.php';
 
-	$gprest_endpoints['settings'] = new GP_REST_Settings_Controller();
-	$gprest_endpoints['profile']  = new GP_REST_Profile_Controller();
+	$gprest_endpoints              = array();
+	$gprest_endpoints['languages'] = new GP_REST_Languages_Controller();
+	$gprest_endpoints['settings']  = new GP_REST_Settings_Controller();
+	$gprest_endpoints['profile']   = new GP_REST_Profile_Controller();
 }
 add_action( 'gp_init', 'Meloniq\GpRest\gp_init' );
