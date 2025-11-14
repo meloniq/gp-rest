@@ -30,7 +30,7 @@ class GP_REST_Languages_Controller extends GP_REST_Controller {
 	}
 
 	/**
-	 * Registers the routes for the user profile endpoint.
+	 * Registers the routes for the languages endpoint.
 	 *
 	 * @see register_rest_route()
 	 */
@@ -44,7 +44,7 @@ class GP_REST_Languages_Controller extends GP_REST_Controller {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_items' ),
-					'permission_callback' => array( $this, 'permissions_check' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
 					'args'                => $this->get_collection_params(),
 				),
 			)
@@ -73,7 +73,7 @@ class GP_REST_Languages_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function permissions_check( $request ) {
+	public function get_items_permissions_check( $request ) {
 		return true;
 	}
 
