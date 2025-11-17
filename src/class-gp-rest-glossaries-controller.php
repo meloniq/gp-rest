@@ -34,15 +34,71 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 	 */
 	public function register_routes() {
 
-		// glossaries/new .
+		// GET glossaries .
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->rest_base . '/new',
+			'/' . $this->rest_base,
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_glossaries' ),
+					'permission_callback' => array( $this, 'get_glossaries_permissions_check' ),
+					'args'                => $this->get_collection_params(),
+				),
+			)
+		);
+
+		// POST glossaries .
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_item' ),
-					'permission_callback' => array( $this, 'create_item_permissions_check' ),
+					'callback'            => array( $this, 'create_glossary' ),
+					'permission_callback' => array( $this, 'create_glossary_permissions_check' ),
+					'args'                => $this->get_collection_params(),
+				),
+			)
+		);
+
+		// GET glossaries/{id} .
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>\d+)',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_glossary' ),
+					'permission_callback' => array( $this, 'get_glossary_permissions_check' ),
+					'args'                => $this->get_collection_params(),
+				),
+			)
+		);
+
+		// PUT glossaries/{id} .
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>\d+)',
+			array(
+				array(
+					'methods'             => WP_REST_Server::EDITABLE,
+					'callback'            => array( $this, 'edit_glossary' ),
+					'permission_callback' => array( $this, 'edit_glossary_permissions_check' ),
+					'args'                => $this->get_collection_params(),
+				),
+			)
+		);
+
+		// DELETE glossaries/{id} .
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>\d+)',
+			array(
+				array(
+					'methods'             => WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'delete_glossary' ),
+					'permission_callback' => array( $this, 'delete_glossary_permissions_check' ),
 					'args'                => $this->get_collection_params(),
 				),
 			)
@@ -50,13 +106,38 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 	}
 
 	/**
-	 * Handles POST requests to /glossaries/new endpoint.
+	 * Handles GET requests to /glossaries endpoint.
 	 *
 	 * @param WP_REST_Request $request The REST request.
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function create_item( $request ) {
+	public function get_glossaries( $request ) {
+		$glossaries = GP::$glossary->all();
+
+		$data = array();
+
+		foreach ( $glossaries as $glossary ) {
+			$data[] = array(
+				'id'                 => $glossary->id,
+				'translation_set_id' => $glossary->translation_set_id,
+				'description'        => $glossary->description,
+			);
+		}
+
+		$response = new WP_REST_Response( $data, 200 );
+
+		return $response;
+	}
+
+	/**
+	 * Handles POST requests to /glossaries endpoint.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function create_glossary( $request ) {
 		// required translation_set_id parameter.
 		$translation_set_id = absint( $request->get_param( 'translation_set_id' ) );
 
@@ -118,13 +199,184 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 	}
 
 	/**
+	 * Handles GET requests to /glossaries/{id} endpoint.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function get_glossary( $request ) {
+		$glossary_id = absint( $request->get_param( 'id' ) );
+		$glossary    = GP::$glossary->get( $glossary_id );
+		if ( ! $glossary ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'glossary_not_found',
+					'message' => __( 'Glossary not found.', 'gp-rest' ),
+				),
+				404
+			);
+		}
+
+		$data = array(
+			'id'                 => $glossary->id,
+			'translation_set_id' => $glossary->translation_set_id,
+			'description'        => $glossary->description,
+		);
+
+		$response = new WP_REST_Response( $data, 200 );
+
+		return $response;
+	}
+
+	/**
+	 * Handles PUT requests to /glossaries/{id} endpoint.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function edit_glossary( $request ) {
+		$glossary_id = absint( $request->get_param( 'id' ) );
+		$glossary    = GP::$glossary->get( $glossary_id );
+		if ( ! $glossary ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'glossary_not_found',
+					'message' => __( 'Glossary not found.', 'gp-rest' ),
+				),
+				404
+			);
+		}
+
+		// translation_set_id parameter.
+		$translation_set_id = $glossary->translation_set_id;
+
+		// optional description parameter.
+		$description = (string) $request->get_param( 'description' );
+		if ( ! empty( $description ) ) {
+			$description = wp_kses_post( $description );
+		}
+
+		GP::$glossary->id = $glossary_id;
+		$updated          = GP::$glossary->update(
+			array(
+				'translation_set_id' => $translation_set_id,
+				'description'        => $description,
+			)
+		);
+
+		if ( ! $updated ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'glossary_update_failed',
+					'message' => __( 'Failed to update glossary.', 'gp-rest' ),
+				),
+				500
+			);
+		}
+
+		$data = array(
+			'id'                 => $glossary_id,
+			'translation_set_id' => $translation_set_id,
+			'description'        => $description,
+		);
+
+		$response = new WP_REST_Response( $data, 200 );
+
+		return $response;
+	}
+
+	/**
+	 * Handles DELETE requests to /glossaries/{id} endpoint.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function delete_glossary( $request ) {
+		$glossary_id = absint( $request->get_param( 'id' ) );
+		$glossary    = GP::$glossary->get( $glossary_id );
+		if ( ! $glossary ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'glossary_not_found',
+					'message' => __( 'Glossary not found.', 'gp-rest' ),
+				),
+				404
+			);
+		}
+
+		// Set glossary ID and delete.
+		GP::$glossary->id = $glossary_id;
+		$deleted          = GP::$glossary->delete();
+		if ( ! $deleted ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'glossary_deletion_failed',
+					'message' => __( 'Failed to delete glossary.', 'gp-rest' ),
+				),
+				500
+			);
+		}
+
+		return new WP_REST_Response( null, 204 );
+	}
+
+	/**
+	 * Permission check for retrieving glossaries.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return bool True if the request has permission, false otherwise.
+	 */
+	public function get_glossaries_permissions_check( $request ) {
+		return true;
+	}
+
+	/**
 	 * Permission check for creating a new glossary.
 	 *
 	 * @param WP_REST_Request $request The REST request.
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function create_item_permissions_check( $request ) {
+	public function create_glossary_permissions_check( $request ) {
+		// Todo: Refine permission logic as needed.
+		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Permission check for retrieving a glossary.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return bool True if the request has permission, false otherwise.
+	 */
+	public function get_glossary_permissions_check( $request ) {
+		return true;
+	}
+
+	/**
+	 * Permission check for editing a glossary.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return bool True if the request has permission, false otherwise.
+	 */
+	public function edit_glossary_permissions_check( $request ) {
+		// Todo: Refine permission logic as needed.
+		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Permission check for deleting a glossary.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return bool True if the request has permission, false otherwise.
+	 */
+	public function delete_glossary_permissions_check( $request ) {
 		// Todo: Refine permission logic as needed.
 		return current_user_can( 'manage_options' );
 	}
