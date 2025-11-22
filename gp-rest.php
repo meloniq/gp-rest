@@ -48,6 +48,7 @@ function gp_init() {
 	require_once __DIR__ . '/src/class-gp-rest-glossaries-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-glossary-entries-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-languages-controller.php';
+	require_once __DIR__ . '/src/class-gp-rest-sets-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-settings-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-profile-controller.php';
 
@@ -55,6 +56,7 @@ function gp_init() {
 	$gprest_endpoints['glossaries']       = new GP_REST_Glossaries_Controller();
 	$gprest_endpoints['glossary-entries'] = new GP_REST_Glossary_Entries_Controller();
 	$gprest_endpoints['languages']        = new GP_REST_Languages_Controller();
+	$gprest_endpoints['sets']             = new GP_REST_Sets_Controller();
 	$gprest_endpoints['settings']         = new GP_REST_Settings_Controller();
 	$gprest_endpoints['profile']          = new GP_REST_Profile_Controller();
 }
