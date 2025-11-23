@@ -1,0 +1,514 @@
+<?php
+/**
+ * REST API: GP_REST_Translations_Controller class
+ *
+ * @package Meloniq\GpRest
+ */
+
+namespace Meloniq\GpRest;
+
+use GP;
+use GP_Locales;
+use WP_REST_Response;
+use WP_REST_Request;
+use WP_REST_Server;
+
+/**
+ * Core class used to manage a translations via the REST API.
+ *
+ * @see GP_REST_Controller
+ */
+class GP_REST_Translations_Controller extends GP_REST_Controller {
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		$this->rest_base = 'translations';
+		parent::__construct();
+	}
+
+	/**
+	 * Registers the routes for the translations endpoint.
+	 *
+	 * @see register_rest_route()
+	 */
+	public function register_routes() {
+
+		// GET translations?? .
+
+		// POST translations .
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'create_translation' ),
+					'permission_callback' => array( $this, 'create_translation_permissions_check' ),
+					'args'                => $this->get_collection_params(),
+				),
+			)
+		);
+
+		// GET translations/{id} .
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>\d+)',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_translation' ),
+					'permission_callback' => array( $this, 'get_translation_permissions_check' ),
+					'args'                => $this->get_collection_params(),
+				),
+			)
+		);
+
+		// PUT translations/{id} .
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>\d+)',
+			array(
+				array(
+					'methods'             => WP_REST_Server::EDITABLE,
+					'callback'            => array( $this, 'edit_translation' ),
+					'permission_callback' => array( $this, 'edit_translation_permissions_check' ),
+					'args'                => $this->get_collection_params(),
+				),
+			)
+		);
+
+		// DELETE translations/{id} .
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>\d+)',
+			array(
+				array(
+					'methods'             => WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'delete_translation' ),
+					'permission_callback' => array( $this, 'delete_translation_permissions_check' ),
+					'args'                => $this->get_collection_params(),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Handles POST requests to /translations endpoint.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function create_translation( $request ) {
+		$project_id = $request->get_param( 'project_id' );
+		$project    = GP::$project->get( $project_id );
+		if ( ! $project ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'invalid_project_id',
+					'message' => __( 'Invalid project ID.', 'gp-rest' ),
+				),
+				400
+			);
+		}
+
+		$translation_set_id = absint( $request->get_param( 'translation_set_id' ) );
+		$translation_set    = GP::$translation_set->get( $translation_set_id );
+		if ( ! $translation_set ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'translation_set_not_found',
+					'message' => __( 'Translation set not found.', 'gp-rest' ),
+				),
+				404
+			);
+		}
+
+		$locale = GP_Locales::by_slug( $translation_set->locale );
+		if ( ! $locale ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'locale_not_found',
+					'message' => __( 'Locale not found.', 'gp-rest' ),
+				),
+				404
+			);
+		}
+
+		$original_id = absint( $request->get_param( 'original_id' ) );
+		$original    = GP::$original->get( $original_id );
+		if ( ! $original ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'original_not_found',
+					'message' => __( 'Original string not found.', 'gp-rest' ),
+				),
+				404
+			);
+		}
+
+		// Reduce range by one since we're starting at 0, see GH#516.
+		$range = range( 0, GP::$translation->get_static( 'number_of_plural_translations' ) - 1 );
+
+		$translations = array();
+		foreach ( $range as $index ) {
+			$translation_text = $request->get_param( 'translation_' . $index );
+			if ( null !== $translation_text ) {
+				$translations[ 'translation_' . $index ] = $translation_text;
+			}
+		}
+
+		$warnings = GP::$translation_warnings->check( $original->singular, $original->plural, $translations, $locale );
+		$errors   = GP::$translation_errors->check( $original, $translations, $locale );
+		if ( ! empty( $errors ) ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'translation_errors',
+					'message' => __( 'Translation contains errors.', 'gp-rest' ),
+					'errors'  => $errors,
+				),
+				400
+			);
+		}
+
+		$existing_translations = GP::$translation->for_translation(
+			$project,
+			$translation_set,
+			'no-limit',
+			array(
+				'original_id' => $original_id,
+				'status'      => 'current_or_waiting',
+			),
+			array()
+		);
+
+		foreach ( $existing_translations as $existing_translation ) {
+			if ( array_pad( $translations, $locale->nplurals, null ) === $existing_translation->translations ) {
+				return new WP_REST_Response(
+					array(
+						'code'    => 'duplicate_translation',
+						'message' => __( 'An identical translation already exists.', 'gp-rest' ),
+					),
+					400
+				);
+			}
+		}
+
+		$data = array(
+			'translation_set_id' => $translation_set_id,
+			'original_id'        => $original_id,
+			'user_id'            => get_current_user_id(),
+			'status'             => 'waiting',
+			'warnings'           => $warnings,
+		);
+		$data = array_merge( $data, $translations );
+
+		$new_translation = GP::$translation->create( $data );
+		if ( ! $new_translation ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'translation_creation_failed',
+					'message' => __( 'Failed to create translation.', 'gp-rest' ),
+				),
+				500
+			);
+		}
+
+		if ( ! $new_translation->validate() ) {
+			$new_translation->delete();
+			return new WP_REST_Response(
+				array(
+					'code'    => 'invalid_translation_data',
+					'message' => __( 'Invalid translation data.', 'gp-rest' ),
+					'errors'  => $new_translation->errors,
+				),
+				400
+			);
+		}
+
+		$translations = array();
+		foreach ( $range as $index ) {
+			$tr_id = 'translation_' . $index;
+			if ( ! empty( $new_translation->$tr_id ) ) {
+				$translations[ 'translation_' . $index ] = $new_translation->$tr_id;
+			}
+		}
+
+		$response_data = array(
+			'id'                 => $new_translation->id,
+			'translation_set_id' => $new_translation->translation_set_id,
+			'original_id'        => $new_translation->original_id,
+			'translations'       => $translations,
+			'status'             => $new_translation->status,
+			'warnings'           => $new_translation->warnings,
+		);
+
+		$response = new WP_REST_Response( $response_data, 201 );
+
+		return $response;
+	}
+
+	/**
+	 * Handles GET requests to /translations/{id} endpoint.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function get_translation( $request ) {
+		$translation_id = absint( $request->get_param( 'id' ) );
+		$translation    = GP::$translation->get( $translation_id );
+		if ( ! $translation ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'translation_not_found',
+					'message' => __( 'Translation not found.', 'gp-rest' ),
+				),
+				404
+			);
+		}
+
+		// Reduce range by one since we're starting at 0, see GH#516.
+		$range = range( 0, GP::$translation->get_static( 'number_of_plural_translations' ) - 1 );
+
+		$translations = array();
+		foreach ( $range as $index ) {
+			$tr_id = 'translation_' . $index;
+			if ( ! empty( $translation->$tr_id ) ) {
+				$translations[ 'translation_' . $index ] = $translation->$tr_id;
+			}
+		}
+
+		$data = array(
+			'id'                 => $translation->id,
+			'translation_set_id' => $translation->translation_set_id,
+			'original_id'        => $translation->original_id,
+			'translations'       => $translations,
+			'status'             => $translation->status,
+			'warnings'           => $translation->warnings,
+		);
+
+		$response = new WP_REST_Response( $data, 200 );
+
+		return $response;
+	}
+
+	/**
+	 * Handles PUT requests to /translations/{id} endpoint.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function edit_translation( $request ) {
+		$translation_id = absint( $request->get_param( 'id' ) );
+		$translation    = GP::$translation->get( $translation_id );
+		if ( ! $translation ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'translation_not_found',
+					'message' => __( 'Translation not found.', 'gp-rest' ),
+				),
+				404
+			);
+		}
+
+		$project_id = $request->get_param( 'project_id' );
+		$project    = GP::$project->get( $project_id );
+		if ( ! $project ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'invalid_project_id',
+					'message' => __( 'Invalid project ID.', 'gp-rest' ),
+				),
+				400
+			);
+		}
+
+		$translation_set_id = absint( $request->get_param( 'translation_set_id' ) );
+		$translation_set    = GP::$translation_set->get( $translation_set_id );
+		if ( ! $translation_set ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'translation_set_not_found',
+					'message' => __( 'Translation set not found.', 'gp-rest' ),
+				),
+				404
+			);
+		}
+
+		$locale = GP_Locales::by_slug( $translation_set->locale );
+		if ( ! $locale ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'locale_not_found',
+					'message' => __( 'Locale not found.', 'gp-rest' ),
+				),
+				404
+			);
+		}
+
+		$original_id = absint( $request->get_param( 'original_id' ) );
+		$original    = GP::$original->get( $original_id );
+		if ( ! $original ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'original_not_found',
+					'message' => __( 'Original string not found.', 'gp-rest' ),
+				),
+				404
+			);
+		}
+
+		// Reduce range by one since we're starting at 0, see GH#516.
+		$range = range( 0, GP::$translation->get_static( 'number_of_plural_translations' ) - 1 );
+
+		$translations = array();
+		foreach ( $range as $index ) {
+			$translation_text = $request->get_param( 'translation_' . $index );
+			if ( null !== $translation_text ) {
+				$translations[ 'translation_' . $index ] = $translation_text;
+			}
+		}
+
+		$warnings = GP::$translation_warnings->check( $original->singular, $original->plural, $translations, $locale );
+		$errors   = GP::$translation_errors->check( $original, $translations, $locale );
+		if ( ! empty( $errors ) ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'translation_errors',
+					'message' => __( 'Translation contains errors.', 'gp-rest' ),
+					'errors'  => $errors,
+				),
+				400
+			);
+		}
+
+		$data = array(
+			'translation_set_id' => $translation_set_id,
+			'original_id'        => $original_id,
+			'user_id'            => get_current_user_id(),
+			'status'             => $translation->status,
+			'warnings'           => $warnings,
+		);
+		$data = array_merge( $data, $translations );
+
+		$updated = GP::$translation->update( $data, array( 'id' => $translation_id ) );
+		if ( ! $updated ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'translation_update_failed',
+					'message' => __( 'Failed to update translation.', 'gp-rest' ),
+				),
+				500
+			);
+		}
+
+		$updated_translation = GP::$translation->get( $translation_id );
+
+		$translations = array();
+		foreach ( $range as $index ) {
+			$tr_id = 'translation_' . $index;
+			if ( ! empty( $updated_translation->$tr_id ) ) {
+				$translations[ 'translation_' . $index ] = $updated_translation->$tr_id;
+			}
+		}
+
+		$response_data = array(
+			'id'                 => $updated_translation->id,
+			'translation_set_id' => $updated_translation->translation_set_id,
+			'original_id'        => $updated_translation->original_id,
+			'translations'       => $translations,
+			'status'             => $updated_translation->status,
+			'warnings'           => $updated_translation->warnings,
+		);
+
+		$response = new WP_REST_Response( $response_data, 200 );
+
+		return $response;
+	}
+
+	/**
+	 * Handles DELETE requests to /translations/{id} endpoint.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function delete_translation( $request ) {
+		$translation_id = absint( $request->get_param( 'id' ) );
+		$translation    = GP::$translation->get( $translation_id );
+		if ( ! $translation ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'translation_not_found',
+					'message' => __( 'Translation not found.', 'gp-rest' ),
+				),
+				404
+			);
+		}
+
+		$deleted = $translation->delete();
+		if ( ! $deleted ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'translation_deletion_failed',
+					'message' => __( 'Failed to delete translation.', 'gp-rest' ),
+				),
+				500
+			);
+		}
+
+		return new WP_REST_Response( null, 204 );
+	}
+
+	/**
+	 * Permission check for creating a new translation.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return bool True if the request has permission, false otherwise.
+	 */
+	public function create_translation_permissions_check( $request ) {
+		// Todo: Refine permission logic as needed.
+		// $can_edit = $this->can( 'approve', 'translation-set', $translation_set->id );.
+		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Permission check for retrieving a translation.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return bool True if the request has permission, false otherwise.
+	 */
+	public function get_translation_permissions_check( $request ) {
+		return true;
+	}
+
+	/**
+	 * Permission check for editing a translation.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return bool True if the request has permission, false otherwise.
+	 */
+	public function edit_translation_permissions_check( $request ) {
+		// Todo: Refine permission logic as needed.
+		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Permission check for deleting a translation.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return bool True if the request has permission, false otherwise.
+	 */
+	public function delete_translation_permissions_check( $request ) {
+		// Todo: Refine permission logic as needed.
+		return current_user_can( 'manage_options' );
+	}
+}

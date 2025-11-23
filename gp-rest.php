@@ -50,6 +50,7 @@ function gp_init() {
 	require_once __DIR__ . '/src/class-gp-rest-languages-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-sets-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-settings-controller.php';
+	require_once __DIR__ . '/src/class-gp-rest-translations-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-profile-controller.php';
 
 	$gprest_endpoints                     = array();
@@ -58,6 +59,7 @@ function gp_init() {
 	$gprest_endpoints['languages']        = new GP_REST_Languages_Controller();
 	$gprest_endpoints['sets']             = new GP_REST_Sets_Controller();
 	$gprest_endpoints['settings']         = new GP_REST_Settings_Controller();
+	$gprest_endpoints['translations']     = new GP_REST_Translations_Controller();
 	$gprest_endpoints['profile']          = new GP_REST_Profile_Controller();
 }
 add_action( 'gp_init', 'Meloniq\GpRest\gp_init' );
