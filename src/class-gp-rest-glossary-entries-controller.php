@@ -63,6 +63,20 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 			)
 		);
 
+		// GET glossaries/{id}/entries/{entry_id} .
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>\d+)/entries/(?P<entry_id>\d+)',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_entry' ),
+					'permission_callback' => array( $this, 'get_entry_permissions_check' ),
+					'args'                => $this->get_collection_params(),
+				),
+			)
+		);
+
 		// PUT glossaries/{id}/entries/{entry_id} .
 		register_rest_route(
 			$this->namespace,
@@ -210,6 +224,53 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 		);
 
 		$response = new WP_REST_Response( $data, 201 );
+
+		return $response;
+	}
+
+	/**
+	 * Handles GET requests to /glossaries/{id}/entries/{entry_id} endpoint.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function get_entry( $request ) {
+		$glossary_id = (int) $request->get_param( 'id' );
+		$glossary    = GP::$glossary->get( $glossary_id );
+		if ( ! $glossary ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'glossary_not_found',
+					'message' => __( 'Glossary not found.', 'gp-rest' ),
+				),
+				404
+			);
+		}
+
+		$entry_id = (int) $request->get_param( 'entry_id' );
+		$entry    = GP::$glossary_entry->get( $entry_id );
+		if ( ! $entry || $entry->glossary_id !== $glossary_id ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'entry_not_found',
+					'message' => __( 'Glossary entry not found.', 'gp-rest' ),
+				),
+				404
+			);
+		}
+
+		$data = array(
+			'glossary_id'    => $entry->glossary_id,
+			'id'             => $entry->id,
+			'term'           => $entry->term,
+			'translation'    => $entry->translation,
+			'part_of_speech' => $entry->part_of_speech,
+			'comment'        => $entry->comment,
+			'last_edited_by' => $entry->last_edited_by,
+		);
+
+		$response = new WP_REST_Response( $data, 200 );
 
 		return $response;
 	}
@@ -365,6 +426,17 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 		// Todo: Refine permission logic as needed.
 		// $can_edit = $this->can( 'approve', 'translation-set', $translation_set->id );.
 		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Permission check for retrieving a glossary entry.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return bool True if the request has permission, false otherwise.
+	 */
+	public function get_entry_permissions_check( $request ) {
+		return true;
 	}
 
 	/**
