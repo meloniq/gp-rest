@@ -19,6 +19,8 @@ use WP_REST_Server;
  */
 class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 
+	use GP_Responses_Helper;
+
 	/**
 	 * Constructor.
 	 */
@@ -143,25 +145,13 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 
 		$translation_set = GP::$translation_set->get( $translation_set_id );
 		if ( ! $translation_set ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'glossary_creation_failed',
-					'message' => __( 'Invalid translation set ID.', 'gp-rest' ),
-				),
-				400
-			);
+			return $this->response_404_translation_set_not_found();
 		}
 
 		// get Glossary by translation_set_id to ensure uniqueness.
 		$existing_glossary = GP::$glossary->find( array( 'translation_set_id' => $translation_set_id ) );
 		if ( ! empty( $existing_glossary ) ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'glossary_creation_failed',
-					'message' => __( 'A glossary for this translation set already exists.', 'gp-rest' ),
-				),
-				400
-			);
+			return $this->response_409_glossary_already_exists();
 		}
 
 		// optional description parameter.
@@ -178,13 +168,7 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 		);
 
 		if ( ! $glossary ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'glossary_creation_failed',
-					'message' => __( 'Failed to create glossary.', 'gp-rest' ),
-				),
-				500
-			);
+			return $this->response_500_glossary_creation_failed();
 		}
 
 		$data = array(
@@ -209,13 +193,7 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 		$glossary_id = absint( $request->get_param( 'id' ) );
 		$glossary    = GP::$glossary->get( $glossary_id );
 		if ( ! $glossary ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'glossary_not_found',
-					'message' => __( 'Glossary not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_glossary_not_found();
 		}
 
 		$data = array(
@@ -240,13 +218,7 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 		$glossary_id = absint( $request->get_param( 'id' ) );
 		$glossary    = GP::$glossary->get( $glossary_id );
 		if ( ! $glossary ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'glossary_not_found',
-					'message' => __( 'Glossary not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_glossary_not_found();
 		}
 
 		// translation_set_id parameter.
@@ -267,13 +239,7 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 		);
 
 		if ( ! $updated ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'glossary_update_failed',
-					'message' => __( 'Failed to update glossary.', 'gp-rest' ),
-				),
-				500
-			);
+			return $this->response_500_glossary_update_failed();
 		}
 
 		$data = array(
@@ -298,26 +264,14 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 		$glossary_id = absint( $request->get_param( 'id' ) );
 		$glossary    = GP::$glossary->get( $glossary_id );
 		if ( ! $glossary ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'glossary_not_found',
-					'message' => __( 'Glossary not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_glossary_not_found();
 		}
 
 		// Set glossary ID and delete.
 		GP::$glossary->id = $glossary_id;
 		$deleted          = GP::$glossary->delete();
 		if ( ! $deleted ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'glossary_deletion_failed',
-					'message' => __( 'Failed to delete glossary.', 'gp-rest' ),
-				),
-				500
-			);
+			return $this->response_500_glossary_deletion_failed();
 		}
 
 		return new WP_REST_Response( null, 204 );

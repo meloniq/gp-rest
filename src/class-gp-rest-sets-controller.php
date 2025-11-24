@@ -20,6 +20,8 @@ use WP_REST_Server;
  */
 class GP_REST_Sets_Controller extends GP_REST_Controller {
 
+	use GP_Responses_Helper;
+
 	/**
 	 * Constructor.
 	 */
@@ -116,13 +118,7 @@ class GP_REST_Sets_Controller extends GP_REST_Controller {
 	public function get_sets( $request ) {
 		$project_id = absint( $request->get_param( 'project_id' ) );
 		if ( ! $project_id ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'sets_missing_project_id',
-					'message' => __( 'Project ID is required.', 'gp-rest' ),
-				),
-				400
-			);
+			return $this->response_404_project_not_found();
 		}
 
 		$params = array(
@@ -157,25 +153,13 @@ class GP_REST_Sets_Controller extends GP_REST_Controller {
 		$project_id = absint( $request->get_param( 'project_id' ) );
 		$project    = GP::$project->get( $project_id );
 		if ( ! $project ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'set_invalid_project',
-					'message' => __( 'Invalid project ID.', 'gp-rest' ),
-				),
-				400
-			);
+			return $this->response_404_project_not_found();
 		}
 
 		$locale     = sanitize_text_field( $request->get_param( 'locale' ) );
 		$locale_obj = GP_Locales::by_slug( $locale );
 		if ( ! $locale_obj ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'set_invalid_locale',
-					'message' => __( 'Invalid locale.', 'gp-rest' ),
-				),
-				400
-			);
+			return $this->response_404_locale_not_found();
 		}
 
 		$name = sanitize_text_field( $request->get_param( 'name' ) );
@@ -197,13 +181,7 @@ class GP_REST_Sets_Controller extends GP_REST_Controller {
 			'slug'       => $slug,
 		);
 		if ( GP::$translation_set->find_one( $params ) ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'set_exists',
-					'message' => __( 'A translation set with the same project, locale, and slug already exists.', 'gp-rest' ),
-				),
-				400
-			);
+			return $this->response_409_translation_set_already_exists();
 		}
 
 		$data = array(
@@ -215,13 +193,7 @@ class GP_REST_Sets_Controller extends GP_REST_Controller {
 		$set  = GP::$translation_set->create( $data );
 
 		if ( ! $set ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'set_creation_failed',
-					'message' => __( 'Failed to create translation set.', 'gp-rest' ),
-				),
-				500
-			);
+			return $this->response_500_translation_set_creation_failed();
 		}
 
 		$response_data = array(
@@ -248,13 +220,7 @@ class GP_REST_Sets_Controller extends GP_REST_Controller {
 		$set_id = absint( $request->get_param( 'id' ) );
 		$set    = GP::$translation_set->get( $set_id );
 		if ( ! $set ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'set_not_found',
-					'message' => __( 'Translation set not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_translation_set_not_found();
 		}
 
 		$data = array(
@@ -281,37 +247,19 @@ class GP_REST_Sets_Controller extends GP_REST_Controller {
 		$set_id = absint( $request->get_param( 'id' ) );
 		$set    = GP::$translation_set->get( $set_id );
 		if ( ! $set ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'set_not_found',
-					'message' => __( 'Translation set not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_translation_set_not_found();
 		}
 
 		$project_id = absint( $request->get_param( 'project_id' ) );
 		$project    = GP::$project->get( $project_id );
 		if ( ! $project ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'set_invalid_project',
-					'message' => __( 'Invalid project ID.', 'gp-rest' ),
-				),
-				400
-			);
+			return $this->response_404_project_not_found();
 		}
 
 		$locale     = sanitize_text_field( $request->get_param( 'locale' ) );
 		$locale_obj = GP_Locales::by_slug( $locale );
 		if ( ! $locale_obj ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'set_invalid_locale',
-					'message' => __( 'Invalid locale.', 'gp-rest' ),
-				),
-				400
-			);
+			return $this->response_404_locale_not_found();
 		}
 
 		$name = sanitize_text_field( $request->get_param( 'name' ) );
@@ -335,13 +283,7 @@ class GP_REST_Sets_Controller extends GP_REST_Controller {
 
 		$updated_set = GP::$translation_set->update( $data, array( 'id' => $set_id ) );
 		if ( ! $updated_set ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'set_update_failed',
-					'message' => __( 'Failed to update translation set.', 'gp-rest' ),
-				),
-				500
-			);
+			return $this->response_500_translation_set_update_failed();
 		}
 
 		$response_data = array(
@@ -368,26 +310,14 @@ class GP_REST_Sets_Controller extends GP_REST_Controller {
 		$set_id = absint( $request->get_param( 'id' ) );
 		$set    = GP::$translation_set->get( $set_id );
 		if ( ! $set ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'set_not_found',
-					'message' => __( 'Translation set not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_translation_set_not_found();
 		}
 
 		// Set set ID and delete.
 		GP::$translation_set->id = $set_id;
 		$deleted                 = GP::$translation_set->delete();
 		if ( ! $deleted ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'set_deletion_failed',
-					'message' => __( 'Failed to delete translation set.', 'gp-rest' ),
-				),
-				500
-			);
+			return $this->response_500_translation_set_deletion_failed();
 		}
 
 		$response = new WP_REST_Response( null, 204 );

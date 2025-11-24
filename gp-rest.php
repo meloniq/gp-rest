@@ -43,6 +43,7 @@ function gp_init() {
 	global $gprest_endpoints;
 
 	require_once __DIR__ . '/src/trait-gp-profile-helper.php';
+	require_once __DIR__ . '/src/trait-gp-responses-helper.php';
 
 	require_once __DIR__ . '/src/class-gp-rest-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-glossaries-controller.php';

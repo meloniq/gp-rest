@@ -20,6 +20,8 @@ use WP_REST_Server;
  */
 class GP_REST_Translations_Controller extends GP_REST_Controller {
 
+	use GP_Responses_Helper;
+
 	/**
 	 * Constructor.
 	 */
@@ -105,48 +107,24 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 		$project_id = $request->get_param( 'project_id' );
 		$project    = GP::$project->get( $project_id );
 		if ( ! $project ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'invalid_project_id',
-					'message' => __( 'Invalid project ID.', 'gp-rest' ),
-				),
-				400
-			);
+			return $this->response_404_project_not_found();
 		}
 
 		$translation_set_id = absint( $request->get_param( 'translation_set_id' ) );
 		$translation_set    = GP::$translation_set->get( $translation_set_id );
 		if ( ! $translation_set ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'translation_set_not_found',
-					'message' => __( 'Translation set not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_translation_set_not_found();
 		}
 
 		$locale = GP_Locales::by_slug( $translation_set->locale );
 		if ( ! $locale ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'locale_not_found',
-					'message' => __( 'Locale not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_locale_not_found();
 		}
 
 		$original_id = absint( $request->get_param( 'original_id' ) );
 		$original    = GP::$original->get( $original_id );
 		if ( ! $original ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'original_not_found',
-					'message' => __( 'Original string not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_original_not_found();
 		}
 
 		// Reduce range by one since we're starting at 0, see GH#516.
@@ -186,13 +164,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 
 		foreach ( $existing_translations as $existing_translation ) {
 			if ( array_pad( $translations, $locale->nplurals, null ) === $existing_translation->translations ) {
-				return new WP_REST_Response(
-					array(
-						'code'    => 'duplicate_translation',
-						'message' => __( 'An identical translation already exists.', 'gp-rest' ),
-					),
-					400
-				);
+				return $this->response_409_translation_already_exists();
 			}
 		}
 
@@ -207,13 +179,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 
 		$new_translation = GP::$translation->create( $data );
 		if ( ! $new_translation ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'translation_creation_failed',
-					'message' => __( 'Failed to create translation.', 'gp-rest' ),
-				),
-				500
-			);
+			return $this->response_500_translation_creation_failed();
 		}
 
 		if ( ! $new_translation->validate() ) {
@@ -261,13 +227,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 		$translation_id = absint( $request->get_param( 'id' ) );
 		$translation    = GP::$translation->get( $translation_id );
 		if ( ! $translation ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'translation_not_found',
-					'message' => __( 'Translation not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_translation_not_found();
 		}
 
 		// Reduce range by one since we're starting at 0, see GH#516.
@@ -306,60 +266,30 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 		$translation_id = absint( $request->get_param( 'id' ) );
 		$translation    = GP::$translation->get( $translation_id );
 		if ( ! $translation ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'translation_not_found',
-					'message' => __( 'Translation not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_translation_not_found();
 		}
 
 		$project_id = $request->get_param( 'project_id' );
 		$project    = GP::$project->get( $project_id );
 		if ( ! $project ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'invalid_project_id',
-					'message' => __( 'Invalid project ID.', 'gp-rest' ),
-				),
-				400
-			);
+			return $this->response_404_project_not_found();
 		}
 
 		$translation_set_id = absint( $request->get_param( 'translation_set_id' ) );
 		$translation_set    = GP::$translation_set->get( $translation_set_id );
 		if ( ! $translation_set ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'translation_set_not_found',
-					'message' => __( 'Translation set not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_translation_set_not_found();
 		}
 
 		$locale = GP_Locales::by_slug( $translation_set->locale );
 		if ( ! $locale ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'locale_not_found',
-					'message' => __( 'Locale not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_locale_not_found();
 		}
 
 		$original_id = absint( $request->get_param( 'original_id' ) );
 		$original    = GP::$original->get( $original_id );
 		if ( ! $original ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'original_not_found',
-					'message' => __( 'Original string not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_original_not_found();
 		}
 
 		// Reduce range by one since we're starting at 0, see GH#516.
@@ -397,13 +327,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 
 		$updated = GP::$translation->update( $data, array( 'id' => $translation_id ) );
 		if ( ! $updated ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'translation_update_failed',
-					'message' => __( 'Failed to update translation.', 'gp-rest' ),
-				),
-				500
-			);
+			return $this->response_500_translation_update_failed();
 		}
 
 		$updated_translation = GP::$translation->get( $translation_id );
@@ -441,24 +365,12 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 		$translation_id = absint( $request->get_param( 'id' ) );
 		$translation    = GP::$translation->get( $translation_id );
 		if ( ! $translation ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'translation_not_found',
-					'message' => __( 'Translation not found.', 'gp-rest' ),
-				),
-				404
-			);
+			return $this->response_404_translation_not_found();
 		}
 
 		$deleted = $translation->delete();
 		if ( ! $deleted ) {
-			return new WP_REST_Response(
-				array(
-					'code'    => 'translation_deletion_failed',
-					'message' => __( 'Failed to delete translation.', 'gp-rest' ),
-				),
-				500
-			);
+			return $this->response_500_translation_deletion_failed();
 		}
 
 		return new WP_REST_Response( null, 204 );
