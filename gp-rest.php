@@ -51,7 +51,7 @@ function gp_init() {
 	require_once __DIR__ . '/src/class-gp-rest-languages-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-originals-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-projects-controller.php';
-	require_once __DIR__ . '/src/class-gp-rest-sets-controller.php';
+	require_once __DIR__ . '/src/class-gp-rest-translation-sets-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-settings-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-translations-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-profile-controller.php';
@@ -62,7 +62,7 @@ function gp_init() {
 	$gprest_endpoints['languages']        = new GP_REST_Languages_Controller();
 	$gprest_endpoints['originals']        = new GP_REST_Originals_Controller();
 	$gprest_endpoints['projects']         = new GP_REST_Projects_Controller();
-	$gprest_endpoints['sets']             = new GP_REST_Sets_Controller();
+	$gprest_endpoints['translation-sets'] = new GP_REST_Translation_Sets_Controller();
 	$gprest_endpoints['settings']         = new GP_REST_Settings_Controller();
 	$gprest_endpoints['translations']     = new GP_REST_Translations_Controller();
 	$gprest_endpoints['profile']          = new GP_REST_Profile_Controller();
