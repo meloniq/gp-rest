@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: GP REST\n"
-"POT-Creation-Date: 2025-11-07 23:30+0100\n"
+"POT-Creation-Date: 2025-12-22 19:28+0100\n"
 "PO-Revision-Date: 2025-11-07 11:59+0100\n"
 "Last-Translator: MELONIQ.NET\n"
 "Language-Team: MELONIQ.NET\n"
@@ -16,3 +16,185 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
+
+#: src/class-gp-rest-glossary-entries-controller.php:167
+#: src/class-gp-rest-glossary-entries-controller.php:273
+msgid "Term and translation are required fields."
+msgstr ""
+
+#: src/class-gp-rest-originals-controller.php:161
+msgid "The format parameter."
+msgstr ""
+
+#: src/class-gp-rest-profile-controller.php:128
+msgid "User not found."
+msgstr ""
+
+#: src/class-gp-rest-projects-controller.php:160
+#: src/class-gp-rest-projects-controller.php:263
+#: src/class-gp-rest-sets-controller.php:171
+#: src/class-gp-rest-sets-controller.php:271
+msgid "Name and slug are required."
+msgstr ""
+
+#: src/class-gp-rest-settings-controller.php:183
+#, php-format
+msgid "The %s property has an invalid stored value, and cannot be updated to null."
+msgstr ""
+
+#: src/class-gp-rest-settings-controller.php:318
+msgid "Number of items per page"
+msgstr ""
+
+#: src/class-gp-rest-settings-controller.php:319
+msgid "Number of items to show per page in listings."
+msgstr ""
+
+#: src/class-gp-rest-settings-controller.php:327
+msgid "Default Sort By"
+msgstr ""
+
+#: src/class-gp-rest-settings-controller.php:328
+msgid "Default field to sort by in listings."
+msgstr ""
+
+#: src/class-gp-rest-settings-controller.php:336
+msgid "Default Sort Order"
+msgstr ""
+
+#: src/class-gp-rest-settings-controller.php:337
+msgid "Default order to sort by in listings."
+msgstr ""
+
+#: src/class-gp-rest-translations-controller.php:147
+#: src/class-gp-rest-translations-controller.php:312
+msgid "Translation contains errors."
+msgstr ""
+
+#: src/class-gp-rest-translations-controller.php:190
+msgid "Invalid translation data."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:26
+msgid "Glossary not found."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:41
+msgid "A glossary for this translation set already exists."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:56
+msgid "Failed to create glossary."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:71
+msgid "Failed to update glossary."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:86
+msgid "Failed to delete glossary."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:101
+msgid "Glossary entry not found."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:116
+msgid "A glossary entry for this translation set already exists."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:131
+msgid "Failed to create glossary entry."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:146
+msgid "Failed to update glossary entry."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:161
+msgid "Failed to delete glossary entry."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:176
+msgid "Locale not found."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:191
+msgid "Original string not found."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:206
+msgid "An identical original string already exists."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:221
+msgid "Failed to create original string."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:236
+msgid "Failed to update original string."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:251
+msgid "Failed to delete original string."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:266
+msgid "Project not found."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:281
+msgid "An identical project already exists."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:296
+msgid "Failed to create project."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:311
+msgid "Failed to update project."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:326
+msgid "Failed to delete project."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:341
+msgid "Translation not found."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:356
+msgid "An identical translation already exists."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:371
+msgid "Failed to create translation."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:386
+msgid "Failed to update translation."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:401
+msgid "Failed to delete translation."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:416
+msgid "Translation set not found."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:431
+msgid "A translation set with the same project, locale, and slug already exists."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:446
+msgid "Failed to create translation set."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:461
+msgid "Failed to update translation set."
+msgstr ""
+
+#: src/trait-gp-responses-helper.php:476
+msgid "Failed to delete translation set."
+msgstr ""
