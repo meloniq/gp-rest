@@ -1,0 +1,1264 @@
+{
+	"info": {
+		"_postman_id": "433b625c-9168-4c06-ad45-6b4a94d581d9",
+		"name": "GP REST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3761381"
+	},
+	"item": [
+		{
+			"name": "formats",
+			"item": [
+				{
+					"name": "[GET] Formats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}gp/v1/formats",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"formats"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "glossaries",
+			"item": [
+				{
+					"name": "[GET] Glossaries",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/glossaries",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"glossaries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[POST] Glossary - New",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "translation_set_id",
+									"value": "{{set_id}}",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Created via Postman {{$timestamp}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/glossaries",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"glossaries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Glossary - Get by Glossary ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"glossaries",
+								"{{glossary_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[PUT] Glossary - Edit by Glossary ID",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "translation_set_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Edited via Postman {{$timestamp}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"glossaries",
+								"{{glossary_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[DELETE] Glossary - Delete by Glossary ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"glossaries",
+								"{{glossary_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "glossaries/entries",
+			"item": [
+				{
+					"name": "[GET] Glossary Entries",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}/entries",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"glossaries",
+								"{{glossary_id}}",
+								"entries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[POST] Glossary Entry - New",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "term",
+									"value": "GlotPress",
+									"type": "text"
+								},
+								{
+									"key": "translation",
+									"value": "GlotPress",
+									"type": "text"
+								},
+								{
+									"key": "part_of_speech",
+									"value": "noun",
+									"type": "text"
+								},
+								{
+									"key": "comment",
+									"value": "Odmieniamy: GlotPressa, GlotPressie...",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}/entries",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"glossaries",
+								"{{glossary_id}}",
+								"entries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Glossary Entry - Get by Entry ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}/entries/{{entry_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"glossaries",
+								"{{glossary_id}}",
+								"entries",
+								"{{entry_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[PUT] Glossary Entry - Edit",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "term",
+									"value": "GlotPress",
+									"type": "text"
+								},
+								{
+									"key": "translation",
+									"value": "GlotPress",
+									"type": "text"
+								},
+								{
+									"key": "part_of_speech",
+									"value": "noun",
+									"type": "text"
+								},
+								{
+									"key": "comment",
+									"value": "Odmieniamy: GlotPressa, GlotPressie... {{$timestamp}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}/entries/{{entry_id}} by Entry ID",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"glossaries",
+								"{{glossary_id}}",
+								"entries",
+								"{{entry_id}} by Entry ID"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[DELETE] Glossary Entry - Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}/entries/{{entry_id}} by Entry ID",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"glossaries",
+								"{{glossary_id}}",
+								"entries",
+								"{{entry_id}} by Entry ID"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "languages",
+			"item": [
+				{
+					"name": "[GET] Languages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}gp/v1/languages",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"languages"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "originals",
+			"item": [
+				{
+					"name": "[GET] Originals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}gp/v1/originals?project_id={{project_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"originals"
+							],
+							"query": [
+								{
+									"key": "project_id",
+									"value": "{{project_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[POST] Originals - Import",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "project_id",
+									"value": "{{project_id}}",
+									"type": "text"
+								},
+								{
+									"key": "format",
+									"value": "auto",
+									"type": "text"
+								},
+								{
+									"key": "import-file",
+									"value": "#: src/class-gp-rest-glossary-entries-controller.php:167\n#: src/class-gp-rest-glossary-entries-controller.php:273\nmsgid \"Term and translation are required fields.\"\nmsgstr \"\"\n\n#: src/class-gp-rest-originals-controller.php:161\nmsgid \"The format parameter.\"\nmsgstr \"\"\n\n",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/originals/import",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"originals",
+								"import"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Original - by Original ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}gp/v1/originals/{{original_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"originals",
+								"{{original_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[DELETE] Original - Delete by Original ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}gp/v1/originals/{{original_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"originals",
+								"{{original_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "projects",
+			"item": [
+				{
+					"name": "[GET] Projects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}gp/v1/projects?parent_project_id=0",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"projects"
+							],
+							"query": [
+								{
+									"key": "parent_project_id",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[POST] Project - New",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "GP WordCamp Europe",
+									"type": "text"
+								},
+								{
+									"key": "slug",
+									"value": "gp-wordcamp-europe",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Learn something new about GlotPress and WordCamp Europe each time you visit the admin area.",
+									"type": "text"
+								},
+								{
+									"key": "source_url_template",
+									"value": "https://github.com/meloniq/gp-wordcamp-europe/blob/master/%file%#L%line%",
+									"type": "text"
+								},
+								{
+									"key": "parent_project_id",
+									"value": "0",
+									"type": "text"
+								},
+								{
+									"key": "active",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/projects",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"projects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Project - by Project ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}gp/v1/projects/{{project_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"projects",
+								"{{project_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[PUT] Project - Edit by Project ID",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "GP WordCamp Europe - Edited {{$timestamp}}",
+									"type": "text"
+								},
+								{
+									"key": "slug",
+									"value": "gp-wordcamp-europe",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Learn something new about GlotPress and WordCamp Europe each time you visit the admin area.",
+									"type": "text"
+								},
+								{
+									"key": "source_url_template",
+									"value": "https://github.com/meloniq/gp-wordcamp-europe/blob/master/%file%#L%line%",
+									"type": "text"
+								},
+								{
+									"key": "parent_project_id",
+									"value": "0",
+									"type": "text"
+								},
+								{
+									"key": "active",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/projects/{{project_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"projects",
+								"{{project_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[DELETE] Project - Delete by Project ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}gp/v1/projects/{{project_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"projects",
+								"{{project_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "projects/permissions",
+			"item": [
+				{
+					"name": "[GET] Project Permissions by Project ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/projects/{{project_id}}/permissions",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"projects",
+								"{{project_id}}",
+								"permissions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[POST] Project Permissions - New - by Project ID",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "user_login",
+									"value": "meloniq",
+									"type": "text"
+								},
+								{
+									"key": "locale_slug",
+									"value": "{{locale}}",
+									"type": "text"
+								},
+								{
+									"key": "set_slug",
+									"value": "default",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/projects/{{project_id}}/permissions",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"projects",
+								"{{project_id}}",
+								"permissions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Project Permissions - Get by Permission ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/projects/{{project_id}}/permissions/{{permission_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"projects",
+								"{{project_id}}",
+								"permissions",
+								"{{permission_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[DELETE] Project Permissions - Delete by Permission ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/projects/{{project_id}}/permissions/{{permission_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"projects",
+								"{{project_id}}",
+								"permissions",
+								"{{permission_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "profile",
+			"item": [
+				{
+					"name": "[GET] Profile - Me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}gp/v1/profile/me",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"profile",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Profile - by User ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}gp/v1/profile/{{user_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"profile",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "translations",
+			"item": [
+				{
+					"name": "[POST] Translation - New",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "project_id",
+									"value": "{{project_id}}",
+									"type": "text"
+								},
+								{
+									"key": "translation_set_id",
+									"value": "{{set_id}}",
+									"type": "text"
+								},
+								{
+									"key": "original_id",
+									"value": "{{original_id}}",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "waiting",
+									"description": "current",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "translation_0",
+									"value": "1 powiadomienie usunięte.",
+									"type": "text"
+								},
+								{
+									"key": "translation_1",
+									"value": "2, 3, 4 powiadomienia usunięte.",
+									"type": "text"
+								},
+								{
+									"key": "translation_2",
+									"value": "0, 5, 6 powiadomień usuniętych.",
+									"type": "text"
+								},
+								{
+									"key": "translation_3",
+									"value": "xyz",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "translation_4",
+									"value": "xyz",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "translation_5",
+									"value": "xyz",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/translations",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"translations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Translation - Get by Translation ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}gp/v1/translations/{{translation_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"translations",
+								"{{translation_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[PUT] Translation - Edit by Translation ID",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "project_id",
+									"value": "{{project_id}}",
+									"type": "text"
+								},
+								{
+									"key": "translation_set_id",
+									"value": "{{set_id}}",
+									"type": "text"
+								},
+								{
+									"key": "original_id",
+									"value": "{{original_id}}",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "approve",
+									"description": "reject, fuzzy, approve",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "translation_0",
+									"value": "1 powiadomienie usunięte...",
+									"type": "text"
+								},
+								{
+									"key": "translation_1",
+									"value": "2, 3, 4 powiadomienia usunięte...",
+									"type": "text"
+								},
+								{
+									"key": "translation_2",
+									"value": "0, 5, 6 powiadomień usuniętych...",
+									"type": "text"
+								},
+								{
+									"key": "translation_3",
+									"value": "xyz Edited {{$timestamp}}",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "translation_4",
+									"value": "xyz Edited {{$timestamp}}",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "translation_5",
+									"value": "xyz Edited {{$timestamp}}",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/translations/{{translation_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"translations",
+								"{{translation_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[DELETE] Translation - Delete by Translation ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}gp/v1/translations/{{translation_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"translations",
+								"{{translation_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "--[PUT] Translation - Set Status by Translation ID",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "status",
+									"value": "approve",
+									"description": "reject, fuzzy, approve",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/translations/{{translation_id}}/set-status",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"translations",
+								"{{translation_id}}",
+								"set-status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "translation-sets",
+			"item": [
+				{
+					"name": "[GET] Sets by Project ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/translation-sets?project_id=1",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"translation-sets"
+							],
+							"query": [
+								{
+									"key": "project_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[POST] Set - New",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "locale",
+									"value": "{{locale}}",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Polish",
+									"type": "text"
+								},
+								{
+									"key": "slug",
+									"value": "{{slug}}",
+									"type": "text"
+								},
+								{
+									"key": "project_id",
+									"value": "{{project_id}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/translation-sets",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"translation-sets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Set - Get by Set ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/translation-sets/{{set_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"translation-sets",
+								"{{set_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[PUT] Set - Edit by Set ID",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "locale",
+									"value": "{{locale}}",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Polish - Edited {{$timestamp}}",
+									"type": "text"
+								},
+								{
+									"key": "slug",
+									"value": "{{slug}}",
+									"type": "text"
+								},
+								{
+									"key": "project_id",
+									"value": "{{project_id}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}gp/v1/translation-sets/{{set_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"translation-sets",
+								"{{set_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[DELETE] Set - Delete by Set ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}gp/v1/translation-sets/{{set_id}}",
+							"host": [
+								"{{api_url}}gp"
+							],
+							"path": [
+								"v1",
+								"translation-sets",
+								"{{set_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "password",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "admin",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
