@@ -330,6 +330,81 @@ trait GP_Responses_Helper {
 	}
 
 	/**
+	 * Response 404 for not found project permission.
+	 *
+	 * @return WP_REST_Response The response object.
+	 */
+	public function response_404_project_permission_not_found() {
+		return new WP_REST_Response(
+			array(
+				'code'    => 'project_permission_not_found',
+				'message' => __( 'Project permission not found.', 'gp-rest' ),
+			),
+			404
+		);
+	}
+
+	/**
+	 * Response 409 for project permission already exists.
+	 *
+	 * @return WP_REST_Response The response object.
+	 */
+	public function response_409_project_permission_already_exists() {
+		return new WP_REST_Response(
+			array(
+				'code'    => 'project_permission_already_exists',
+				'message' => __( 'A project permission for this project already exists.', 'gp-rest' ),
+			),
+			409
+		);
+	}
+
+	/**
+	 * Response 500 for project permission creation failed.
+	 *
+	 * @return WP_REST_Response The response object.
+	 */
+	public function response_500_project_permission_creation_failed() {
+		return new WP_REST_Response(
+			array(
+				'code'    => 'project_permission_creation_failed',
+				'message' => __( 'Failed to create project permission.', 'gp-rest' ),
+			),
+			500
+		);
+	}
+
+	/**
+	 * Response 500 for project permission update failed.
+	 *
+	 * @return WP_REST_Response The response object.
+	 */
+	public function response_500_project_permission_update_failed() {
+		return new WP_REST_Response(
+			array(
+				'code'    => 'project_permission_update_failed',
+				'message' => __( 'Failed to update project permission.', 'gp-rest' ),
+			),
+			500
+		);
+	}
+
+	/**
+	 * Response 500 for project permission delete failed.
+	 *
+	 * @return WP_REST_Response The response object.
+	 */
+	public function response_500_project_permission_deletion_failed() {
+		return new WP_REST_Response(
+			array(
+				'code'    => 'project_permission_deletion_failed',
+				'message' => __( 'Failed to delete project permission.', 'gp-rest' ),
+			),
+			500
+		);
+	}
+
+	/**
 	 * Response 404 for not found translation.
 	 *
 	 * @return WP_REST_Response The response object.
@@ -476,6 +551,21 @@ trait GP_Responses_Helper {
 				'message' => __( 'Failed to delete translation set.', 'gp-rest' ),
 			),
 			500
+		);
+	}
+
+	/**
+	 * Response 404 for not found user.
+	 *
+	 * @return WP_REST_Response The response object.
+	 */
+	public function response_404_user_not_found() {
+		return new WP_REST_Response(
+			array(
+				'code'    => 'user_not_found',
+				'message' => __( 'User not found.', 'gp-rest' ),
+			),
+			404
 		);
 	}
 }

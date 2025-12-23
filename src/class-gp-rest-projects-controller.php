@@ -29,7 +29,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	}
 
 	/**
-	 * Registers the routes for the glossaries endpoint.
+	 * Registers the routes for the projects endpoint.
 	 *
 	 * @see register_rest_route()
 	 */

@@ -14,7 +14,7 @@ use WP_REST_Request;
 use WP_REST_Server;
 
 /**
- * Core class used to manage a glossaries via the REST API.
+ * Core class used to manage a glossary entries via the REST API.
  *
  * @see GP_REST_Controller
  */
@@ -31,7 +31,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 	}
 
 	/**
-	 * Registers the routes for the glossaries endpoint.
+	 * Registers the routes for the glossary entries endpoint.
 	 *
 	 * @see register_rest_route()
 	 */
