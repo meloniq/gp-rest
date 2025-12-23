@@ -44,8 +44,8 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_entries' ),
-					'permission_callback' => array( $this, 'get_entries_permissions_check' ),
+					'callback'            => array( $this, 'get_glossary_entries' ),
+					'permission_callback' => array( $this, 'get_glossary_entries_permissions_check' ),
 					'args'                => $this->get_collection_params(),
 				),
 			)
@@ -58,8 +58,8 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_entry' ),
-					'permission_callback' => array( $this, 'create_entry_permissions_check' ),
+					'callback'            => array( $this, 'create_glossary_entry' ),
+					'permission_callback' => array( $this, 'create_glossary_entry_permissions_check' ),
 					'args'                => $this->get_collection_params(),
 				),
 			)
@@ -72,8 +72,8 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_entry' ),
-					'permission_callback' => array( $this, 'get_entry_permissions_check' ),
+					'callback'            => array( $this, 'get_glossary_entry' ),
+					'permission_callback' => array( $this, 'get_glossary_entry_permissions_check' ),
 					'args'                => $this->get_collection_params(),
 				),
 			)
@@ -86,8 +86,8 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'edit_entry' ),
-					'permission_callback' => array( $this, 'edit_entry_permissions_check' ),
+					'callback'            => array( $this, 'edit_glossary_entry' ),
+					'permission_callback' => array( $this, 'edit_glossary_entry_permissions_check' ),
 					'args'                => $this->get_collection_params(),
 				),
 			)
@@ -100,8 +100,8 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_entry' ),
-					'permission_callback' => array( $this, 'delete_entry_permissions_check' ),
+					'callback'            => array( $this, 'delete_glossary_entry' ),
+					'permission_callback' => array( $this, 'delete_glossary_entry_permissions_check' ),
 					'args'                => $this->get_collection_params(),
 				),
 			)
@@ -115,14 +115,14 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function get_entries( $request ) {
+	public function get_glossary_entries( $request ) {
 		$glossary_id = (int) $request->get_param( 'id' );
 		$glossary    = GP::$glossary->get( $glossary_id );
 		if ( ! $glossary ) {
 			return $this->response_404_glossary_not_found();
 		}
 
-		$entries = $glossary->get_entries();
+		$entries = $glossary->get_glossary_entries();
 		$data    = array();
 		foreach ( $entries as $entry ) {
 			$data[] = array(
@@ -148,7 +148,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function create_entry( $request ) {
+	public function create_glossary_entry( $request ) {
 		$glossary_id = (int) $request->get_param( 'id' );
 		$glossary    = GP::$glossary->get( $glossary_id );
 		if ( ! $glossary ) {
@@ -163,7 +163,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 		if ( empty( $entry_term ) || empty( $entry_translation ) ) {
 			return new WP_REST_Response(
 				array(
-					'code'    => 'invalid_entry_data',
+					'code'    => 'invalid_glossary_entry_data',
 					'message' => __( 'Term and translation are required fields.', 'gp-rest' ),
 				),
 				400
@@ -213,7 +213,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function get_entry( $request ) {
+	public function get_glossary_entry( $request ) {
 		$glossary_id = (int) $request->get_param( 'id' );
 		$glossary    = GP::$glossary->get( $glossary_id );
 		if ( ! $glossary ) {
@@ -248,7 +248,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function edit_entry( $request ) {
+	public function edit_glossary_entry( $request ) {
 		$glossary_id = (int) $request->get_param( 'id' );
 		$glossary    = GP::$glossary->get( $glossary_id );
 		if ( ! $glossary ) {
@@ -269,7 +269,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 		if ( empty( $entry_term ) || empty( $entry_translation ) ) {
 			return new WP_REST_Response(
 				array(
-					'code'    => 'invalid_entry_data',
+					'code'    => 'invalid_glossary_entry_data',
 					'message' => __( 'Term and translation are required fields.', 'gp-rest' ),
 				),
 				400
@@ -309,7 +309,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function delete_entry( $request ) {
+	public function delete_glossary_entry( $request ) {
 		$glossary_id = (int) $request->get_param( 'id' );
 		$glossary    = GP::$glossary->get( $glossary_id );
 		if ( ! $glossary ) {
@@ -341,7 +341,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function get_entries_permissions_check( $request ) {
+	public function get_glossary_entries_permissions_check( $request ) {
 		return true;
 	}
 
@@ -352,7 +352,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function create_entry_permissions_check( $request ) {
+	public function create_glossary_entry_permissions_check( $request ) {
 		// Todo: Refine permission logic as needed.
 		// $can_edit = $this->can( 'approve', 'translation-set', $translation_set->id );.
 		return current_user_can( 'manage_options' );
@@ -365,7 +365,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function get_entry_permissions_check( $request ) {
+	public function get_glossary_entry_permissions_check( $request ) {
 		return true;
 	}
 
@@ -376,7 +376,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function edit_entry_permissions_check( $request ) {
+	public function edit_glossary_entry_permissions_check( $request ) {
 		// Todo: Refine permission logic as needed.
 		return current_user_can( 'manage_options' );
 	}
@@ -388,7 +388,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function delete_entry_permissions_check( $request ) {
+	public function delete_glossary_entry_permissions_check( $request ) {
 		// Todo: Refine permission logic as needed.
 		return current_user_can( 'manage_options' );
 	}

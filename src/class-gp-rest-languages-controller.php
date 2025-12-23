@@ -43,8 +43,8 @@ class GP_REST_Languages_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_items' ),
-					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+					'callback'            => array( $this, 'get_languages' ),
+					'permission_callback' => array( $this, 'get_languages_permissions_check' ),
 					'args'                => $this->get_collection_params(),
 				),
 			)
@@ -58,7 +58,7 @@ class GP_REST_Languages_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function get_items( $request ) {
+	public function get_languages( $request ) {
 		$data = $this->get_locales();
 
 		$response = new WP_REST_Response( $data, 200 );
@@ -73,7 +73,7 @@ class GP_REST_Languages_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function get_items_permissions_check( $request ) {
+	public function get_languages_permissions_check( $request ) {
 		return true;
 	}
 
