@@ -7,8 +7,6 @@
 
 namespace Meloniq\GpRest;
 
-use WP_User;
-use WP_Error;
 use WP_REST_Response;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -21,6 +19,7 @@ use WP_REST_Server;
 class GP_REST_Profile_Controller extends GP_REST_Controller {
 
 	use GP_Profile_Helper;
+	use GP_Responses_Helper;
 
 	/**
 	 * Constructor.
@@ -58,8 +57,8 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_item' ),
-					'permission_callback' => array( $this, 'get_item_permissions_check' ),
+					'callback'            => array( $this, 'get_profile' ),
+					'permission_callback' => array( $this, 'get_profile_permissions_check' ),
 					'args'                => $this->get_collection_params(),
 				),
 			)
@@ -87,7 +86,7 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 	public function get_self_profile( $request ) {
 		$current_user_id = get_current_user_id();
 		$request->set_param( 'id', $current_user_id );
-		return $this->get_item( $request );
+		return $this->get_profile( $request );
 	}
 
 	/**
@@ -97,7 +96,7 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the user has permission, false otherwise.
 	 */
-	public function get_item_permissions_check( $request ) {
+	public function get_profile_permissions_check( $request ) {
 		$requested_user_id = (int) $request->get_param( 'id' );
 		$current_user_id   = get_current_user_id();
 
@@ -121,11 +120,11 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response Response object containing the user's profile data.
 	 */
-	public function get_item( $request ) {
+	public function get_profile( $request ) {
 		$user_id = (int) $request->get_param( 'id' );
 		$user    = get_user_by( 'id', $user_id );
 		if ( ! $user ) {
-			return new WP_Error( 'gp_rest_user_not_found', __( 'User not found.', 'gp-rest' ), array( 'status' => 404 ) );
+			return $this->response_404_user_not_found();
 		}
 
 		$recent_projects = $this->get_recent_translation_sets( $user, 5 );
