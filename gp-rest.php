@@ -46,27 +46,29 @@ function gp_init() {
 	require_once __DIR__ . '/src/trait-gp-responses-helper.php';
 
 	require_once __DIR__ . '/src/class-gp-rest-controller.php';
+	require_once __DIR__ . '/src/class-gp-rest-formats-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-glossaries-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-glossary-entries-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-languages-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-originals-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-projects-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-project-permissions-controller.php';
+	require_once __DIR__ . '/src/class-gp-rest-profile-controller.php';
+	require_once __DIR__ . '/src/class-gp-rest-translations-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-translation-sets-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-settings-controller.php';
-	require_once __DIR__ . '/src/class-gp-rest-translations-controller.php';
-	require_once __DIR__ . '/src/class-gp-rest-profile-controller.php';
 
 	$gprest_endpoints                        = array();
+	$gprest_endpoints['formats']             = new GP_REST_Formats_Controller();
 	$gprest_endpoints['glossaries']          = new GP_REST_Glossaries_Controller();
 	$gprest_endpoints['glossary-entries']    = new GP_REST_Glossary_Entries_Controller();
 	$gprest_endpoints['languages']           = new GP_REST_Languages_Controller();
 	$gprest_endpoints['originals']           = new GP_REST_Originals_Controller();
 	$gprest_endpoints['projects']            = new GP_REST_Projects_Controller();
 	$gprest_endpoints['project-permissions'] = new GP_REST_Project_Permissions_Controller();
+	$gprest_endpoints['profile']             = new GP_REST_Profile_Controller();
+	$gprest_endpoints['translations']        = new GP_REST_Translations_Controller();
 	$gprest_endpoints['translation-sets']    = new GP_REST_Translation_Sets_Controller();
 	$gprest_endpoints['settings']            = new GP_REST_Settings_Controller();
-	$gprest_endpoints['translations']        = new GP_REST_Translations_Controller();
-	$gprest_endpoints['profile']             = new GP_REST_Profile_Controller();
 }
 add_action( 'gp_init', 'Meloniq\GpRest\gp_init' );
