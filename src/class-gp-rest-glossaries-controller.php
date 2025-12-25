@@ -46,7 +46,7 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_glossaries' ),
 					'permission_callback' => array( $this, 'get_glossaries_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -60,7 +60,7 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'create_glossary' ),
 					'permission_callback' => array( $this, 'create_glossary_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
 				),
 			)
 		);
@@ -74,7 +74,7 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_glossary' ),
 					'permission_callback' => array( $this, 'get_glossary_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -88,7 +88,7 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( $this, 'edit_glossary' ),
 					'permission_callback' => array( $this, 'edit_glossary_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
 				),
 			)
 		);
@@ -102,7 +102,7 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( $this, 'delete_glossary' ),
 					'permission_callback' => array( $this, 'delete_glossary_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -354,5 +354,44 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 		 * @param WP_REST_Request   $request  Request used to generate the response.
 		 */
 		return apply_filters( 'gp_rest_prepare_glossary', $response, $glossary, $request );
+	}
+
+	/**
+	 * Retrieves the glossary schema, conforming to JSON Schema.
+	 *
+	 * @return array
+	 */
+	public function get_item_schema() {
+		if ( $this->schema ) {
+			return $this->add_additional_fields_schema( $this->schema );
+		}
+
+		$schema = array(
+			'$schema'    => 'http://json-schema.org/draft-04/schema#',
+			'title'      => 'glossary',
+			'type'       => 'object',
+			'properties' => array(
+				'id'                 => array(
+					'description' => __( 'Unique identifier for the glossary.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'translation_set_id' => array(
+					'description' => __( 'The ID of the translation set associated with the glossary.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'description'        => array(
+					'description' => __( 'The description of the glossary.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+			),
+		);
+
+		$this->schema = $schema;
+
+		return $this->add_additional_fields_schema( $this->schema );
 	}
 }

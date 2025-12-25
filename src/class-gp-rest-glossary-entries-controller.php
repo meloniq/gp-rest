@@ -46,7 +46,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_glossary_entries' ),
 					'permission_callback' => array( $this, 'get_glossary_entries_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -60,7 +60,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'create_glossary_entry' ),
 					'permission_callback' => array( $this, 'create_glossary_entry_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
 				),
 			)
 		);
@@ -74,7 +74,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_glossary_entry' ),
 					'permission_callback' => array( $this, 'get_glossary_entry_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -88,7 +88,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( $this, 'edit_glossary_entry' ),
 					'permission_callback' => array( $this, 'edit_glossary_entry_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
 				),
 			)
 		);
@@ -102,7 +102,7 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( $this, 'delete_glossary_entry' ),
 					'permission_callback' => array( $this, 'delete_glossary_entry_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -377,8 +377,8 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 		$entry = $item;
 
 		$data = array(
-			'glossary_id'    => $entry->glossary_id,
 			'id'             => $entry->id,
+			'glossary_id'    => $entry->glossary_id,
 			'term'           => $entry->term,
 			'translation'    => $entry->translation,
 			'part_of_speech' => $entry->part_of_speech,
@@ -398,5 +398,66 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 		 * @param WP_REST_Request   $request  Request used to generate the response.
 		 */
 		return apply_filters( 'gp_rest_prepare_glossary_entry', $response, $entry, $request );
+	}
+
+	/**
+	 * Retrieves the glossary entry schema, conforming to JSON Schema.
+	 *
+	 * @return array
+	 */
+	public function get_item_schema() {
+		if ( $this->schema ) {
+			return $this->add_additional_fields_schema( $this->schema );
+		}
+
+		$schema = array(
+			'$schema'    => 'http://json-schema.org/draft-04/schema#',
+			'title'      => 'glossary_entry',
+			'type'       => 'object',
+			'properties' => array(
+				'id'             => array(
+					'description' => __( 'Unique identifier for the glossary entry.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'glossary_id'    => array(
+					'description' => __( 'Identifier of the glossary this entry belongs to.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'term'           => array(
+					'description' => __( 'The term of the glossary entry.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'translation'    => array(
+					'description' => __( 'The translation of the term.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'part_of_speech' => array(
+					'description' => __( 'The part of speech of the term.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'comment'        => array(
+					'description' => __( 'Additional comments about the glossary entry.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'last_edited_by' => array(
+					'description' => __( 'User ID of the last editor of the glossary entry.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+			),
+		);
+
+		$this->schema = $schema;
+
+		return $this->add_additional_fields_schema( $this->schema );
 	}
 }

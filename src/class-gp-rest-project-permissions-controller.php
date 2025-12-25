@@ -46,7 +46,7 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_project_permissions' ),
 					'permission_callback' => array( $this, 'get_project_permissions_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -60,7 +60,7 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'create_project_permission' ),
 					'permission_callback' => array( $this, 'create_project_permission_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
 				),
 			)
 		);
@@ -74,7 +74,7 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_project_permission' ),
 					'permission_callback' => array( $this, 'get_project_permission_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -88,7 +88,7 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( $this, 'delete_project_permission' ),
 					'permission_callback' => array( $this, 'delete_project_permission_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -322,5 +322,59 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 		 * @param WP_REST_Request         $request  Request used to generate the response.
 		 */
 		return apply_filters( 'gp_rest_prepare_project_permission', $response, $permission, $request );
+	}
+
+	/**
+	 * Retrieves the project permission schema, conforming to JSON Schema.
+	 *
+	 * @return array
+	 */
+	public function get_item_schema() {
+		if ( $this->schema ) {
+			return $this->add_additional_fields_schema( $this->schema );
+		}
+
+		$schema = array(
+			'$schema'    => 'http://json-schema.org/draft-04/schema#',
+			'title'      => 'project_permission',
+			'type'       => 'object',
+			'properties' => array(
+				'id'          => array(
+					'description' => __( 'Unique identifier for the project permission.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'user_id'     => array(
+					'description' => __( 'User ID associated with the permission.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'project_id'  => array(
+					'description' => __( 'Project ID associated with the permission.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'action'      => array(
+					'description' => __( 'Action permitted (e.g., approve).', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'locale_slug' => array(
+					'description' => __( 'Locale slug associated with the permission.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'set_slug'    => array(
+					'description' => __( 'Translation set slug associated with the permission.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+			),
+		);
+
+		$this->schema = $schema;
+
+		return $this->add_additional_fields_schema( $this->schema );
 	}
 }

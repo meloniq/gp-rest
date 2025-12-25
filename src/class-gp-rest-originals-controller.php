@@ -46,7 +46,14 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_originals' ),
 					'permission_callback' => array( $this, 'get_originals_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(
+						'project_id' => array(
+							'description'       => __( 'The ID of the project to retrieve originals for.', 'gp-rest' ),
+							'type'              => 'integer',
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
 			)
 		);
@@ -74,7 +81,7 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_original' ),
 					'permission_callback' => array( $this, 'get_original_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -88,7 +95,7 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( $this, 'delete_original' ),
 					'permission_callback' => array( $this, 'delete_original_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -316,7 +323,7 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 			'references' => $original->references,
 			'status'     => $original->status,
 			'priority'   => $original->priority,
-			'date_added' => $original->date_added,
+			'date_added' => mysql_to_rfc3339( $original->date_added ),
 		);
 
 		// Wrap the data in a response object.
@@ -331,5 +338,90 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 		 * @param WP_REST_Request   $request  Request used to generate the response.
 		 */
 		return apply_filters( 'gp_rest_prepare_original', $response, $original, $request );
+	}
+
+	/**
+	 * Retrieves the original schema, conforming to JSON Schema.
+	 *
+	 * @return array
+	 */
+	public function get_item_schema() {
+		if ( $this->schema ) {
+			return $this->add_additional_fields_schema( $this->schema );
+		}
+
+		$schema = array(
+			'$schema'    => 'http://json-schema.org/draft-04/schema#',
+			'title'      => 'original',
+			'type'       => 'object',
+			'properties' => array(
+				'id'         => array(
+					'description' => __( 'Unique identifier for the original.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'project_id' => array(
+					'description' => __( 'The ID of the project this original belongs to.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'context'    => array(
+					'description' => __( 'The context of the original.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'singular'   => array(
+					'description' => __( 'The singular text of the original.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'plural'     => array(
+					'description' => __( 'The plural text of the original, if applicable.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'comment'    => array(
+					'description' => __( 'The comment associated with the original.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'references' => array(
+					'description' => __( 'References for the original.', 'gp-rest' ),
+					'type'        => 'array',
+					'items'       => array( 'type' => 'string' ),
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'status'     => array(
+					'description' => __( 'The status of the original.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'priority'   => array(
+					'description' => __( 'The priority of the original.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'date_added' => array(
+					'description' => __( 'The date the original was added.', 'gp-rest' ),
+					'type'        => 'string',
+					'format'      => 'date-time',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+			),
+		);
+
+		$this->schema = $schema;
+
+		return $this->add_additional_fields_schema( $this->schema );
 	}
 }

@@ -46,7 +46,7 @@ class GP_REST_Formats_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_formats' ),
 					'permission_callback' => array( $this, 'get_formats_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -113,5 +113,53 @@ class GP_REST_Formats_Controller extends GP_REST_Controller {
 		 * @param WP_REST_Request   $request  Request used to generate the response.
 		 */
 		return apply_filters( 'gp_rest_prepare_format', $response, $format, $request );
+	}
+
+	/**
+	 * Retrieves the format schema, conforming to JSON Schema.
+	 *
+	 * @return array
+	 */
+	public function get_item_schema() {
+		if ( $this->schema ) {
+			return $this->add_additional_fields_schema( $this->schema );
+		}
+
+		$schema = array(
+			'$schema'    => 'http://json-schema.org/draft-04/schema#',
+			'title'      => 'format',
+			'type'       => 'object',
+			'properties' => array(
+				'name'             => array(
+					'description' => __( 'The name of the format.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'extension'        => array(
+					'description' => __( 'The file extension for the format.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'alt_extensions'   => array(
+					'description' => __( 'Alternative file extensions for the format.', 'gp-rest' ),
+					'type'        => 'array',
+					'items'       => array( 'type' => 'string' ),
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'filename_pattern' => array(
+					'description' => __( 'The filename pattern for the format.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+			),
+		);
+
+		$this->schema = $schema;
+
+		return $this->add_additional_fields_schema( $this->schema );
 	}
 }

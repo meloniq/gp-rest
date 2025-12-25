@@ -44,7 +44,14 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_projects' ),
 					'permission_callback' => array( $this, 'get_projects_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(
+						'parent_project_id' => array(
+							'description'       => __( 'Filter projects by parent project ID.', 'gp-rest' ),
+							'type'              => 'integer',
+							'sanitize_callback' => 'absint',
+							'required'          => false,
+						),
+					),
 				),
 			)
 		);
@@ -58,7 +65,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'create_project' ),
 					'permission_callback' => array( $this, 'create_project_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
 				),
 			)
 		);
@@ -72,7 +79,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_project' ),
 					'permission_callback' => array( $this, 'get_project_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -86,7 +93,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( $this, 'edit_project' ),
 					'permission_callback' => array( $this, 'edit_project_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
 				),
 			)
 		);
@@ -100,7 +107,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( $this, 'delete_project' ),
 					'permission_callback' => array( $this, 'delete_project_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -401,5 +408,64 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 		 * @param WP_REST_Request   $request  Request used to generate the response.
 		 */
 		return apply_filters( 'gp_rest_prepare_project', $response, $project, $request );
+	}
+
+	/**
+	 * Retrieves the project schema, conforming to JSON Schema.
+	 *
+	 * @return array
+	 */
+	public function get_item_schema() {
+		if ( $this->schema ) {
+			return $this->add_additional_fields_schema( $this->schema );
+		}
+
+		$schema = array(
+			'$schema'    => 'http://json-schema.org/draft-04/schema#',
+			'title'      => 'project',
+			'type'       => 'object',
+			'properties' => array(
+				'id'                  => array(
+					'description' => __( 'Unique identifier for the project.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'name'                => array(
+					'description' => __( 'The name of the project.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'slug'                => array(
+					'description' => __( 'The slug of the project.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'description'         => array(
+					'description' => __( 'The description of the project.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'source_url_template' => array(
+					'description' => __( 'The source URL template of the project.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'parent_project_id'   => array(
+					'description' => __( 'The parent project ID.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'active'              => array(
+					'description' => __( 'Whether the project is active.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+			),
+		);
+
+		$this->schema = $schema;
+
+		return $this->add_additional_fields_schema( $this->schema );
 	}
 }

@@ -49,7 +49,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'create_translation' ),
 					'permission_callback' => array( $this, 'create_translation_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
 				),
 			)
 		);
@@ -63,7 +63,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_translation' ),
 					'permission_callback' => array( $this, 'get_translation_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -77,7 +77,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( $this, 'edit_translation' ),
 					'permission_callback' => array( $this, 'edit_translation_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
 				),
 			)
 		);
@@ -91,7 +91,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( $this, 'delete_translation' ),
 					'permission_callback' => array( $this, 'delete_translation_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -409,6 +409,64 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 		 * @param WP_REST_Request   $request     Request used to generate the response.
 		 */
 		return apply_filters( 'gp_rest_prepare_translation', $response, $translation, $request );
+	}
+
+	/**
+	 * Retrieves the translation schema, conforming to JSON Schema.
+	 *
+	 * @return array
+	 */
+	public function get_item_schema() {
+		if ( $this->schema ) {
+			return $this->add_additional_fields_schema( $this->schema );
+		}
+
+		$schema = array(
+			'$schema'    => 'http://json-schema.org/draft-04/schema#',
+			'title'      => 'translation',
+			'type'       => 'object',
+			'properties' => array(
+				'id'                 => array(
+					'description' => __( 'Unique identifier for the translation.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'translation_set_id' => array(
+					'description' => __( 'Identifier for the translation set.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'original_id'        => array(
+					'description' => __( 'Identifier for the original string.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'translations'       => array(
+					'description' => __( 'An array of translations for the original string.', 'gp-rest' ),
+					'type'        => 'object',
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'status'             => array(
+					'description' => __( 'The status of the translation.', 'gp-rest' ),
+					'type'        => 'string',
+					'enum'        => array( 'current', 'waiting', 'fuzzy', 'old' ),
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'warnings'           => array(
+					'description' => __( 'An array of warnings associated with the translation.', 'gp-rest' ),
+					'type'        => 'array',
+					'items'       => array(
+						'type' => 'string',
+					),
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+			),
+		);
+
+		$this->schema = $schema;
+
+		return $this->add_additional_fields_schema( $this->schema );
 	}
 
 	/**
