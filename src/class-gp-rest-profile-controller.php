@@ -63,8 +63,8 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 				),
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_profile' ),
-					'permission_callback' => array( $this, 'get_profile_permissions_check' ),
+					'callback'            => array( $this, 'get_item' ),
+					'permission_callback' => array( $this, 'get_item_permissions_check' ),
 					'args'                => array(),
 				),
 			)
@@ -92,7 +92,7 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 	public function get_self_profile( $request ) {
 		$current_user_id = get_current_user_id();
 		$request->set_param( 'id', $current_user_id );
-		return $this->get_profile( $request );
+		return $this->get_item( $request );
 	}
 
 	/**
@@ -102,7 +102,7 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the user has permission, false otherwise.
 	 */
-	public function get_profile_permissions_check( $request ) {
+	public function get_item_permissions_check( $request ) {
 		$requested_user_id = (int) $request->get_param( 'id' );
 		$current_user_id   = get_current_user_id();
 
@@ -126,7 +126,7 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response Response object containing the user's profile data.
 	 */
-	public function get_profile( $request ) {
+	public function get_item( $request ) {
 		$user_id = (int) $request->get_param( 'id' );
 		$user    = get_user_by( 'id', $user_id );
 		if ( ! $user ) {

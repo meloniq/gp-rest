@@ -44,8 +44,8 @@ class GP_REST_Formats_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_formats' ),
-					'permission_callback' => array( $this, 'get_formats_permissions_check' ),
+					'callback'            => array( $this, 'get_items' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
 					'args'                => array(),
 				),
 			)
@@ -59,7 +59,7 @@ class GP_REST_Formats_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function get_formats( $request ) {
+	public function get_items( $request ) {
 		$data = array();
 		foreach ( GP::$formats as $format ) {
 			$item   = $this->prepare_item_for_response( $format, $request );
@@ -78,7 +78,7 @@ class GP_REST_Formats_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function get_formats_permissions_check( $request ) {
+	public function get_items_permissions_check( $request ) {
 		return true;
 	}
 

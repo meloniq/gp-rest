@@ -45,8 +45,8 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_translation_sets' ),
-					'permission_callback' => array( $this, 'get_translation_sets_permissions_check' ),
+					'callback'            => array( $this, 'get_items' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
 					'args'                => array(
 						'project_id' => array(
 							'description'       => __( 'The ID of the project to retrieve translation sets for.', 'gp-rest' ),
@@ -66,8 +66,8 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_translation_set' ),
-					'permission_callback' => array( $this, 'create_translation_set_permissions_check' ),
+					'callback'            => array( $this, 'create_item' ),
+					'permission_callback' => array( $this, 'create_item_permissions_check' ),
 					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
 				),
 			)
@@ -80,8 +80,8 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_translation_set' ),
-					'permission_callback' => array( $this, 'get_translation_set_permissions_check' ),
+					'callback'            => array( $this, 'get_item' ),
+					'permission_callback' => array( $this, 'get_item_permissions_check' ),
 					'args'                => array(),
 				),
 			)
@@ -94,8 +94,8 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'edit_translation_set' ),
-					'permission_callback' => array( $this, 'edit_translation_set_permissions_check' ),
+					'callback'            => array( $this, 'update_item' ),
+					'permission_callback' => array( $this, 'update_item_permissions_check' ),
 					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
 				),
 			)
@@ -108,8 +108,8 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_translation_set' ),
-					'permission_callback' => array( $this, 'delete_translation_set_permissions_check' ),
+					'callback'            => array( $this, 'delete_item' ),
+					'permission_callback' => array( $this, 'delete_item_permissions_check' ),
 					'args'                => array(),
 				),
 			)
@@ -123,7 +123,7 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The response.
 	 */
-	public function get_translation_sets( $request ) {
+	public function get_items( $request ) {
 		$project_id = absint( $request->get_param( 'project_id' ) );
 		if ( ! $project_id ) {
 			return $this->response_404_project_not_found();
@@ -152,7 +152,7 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The response.
 	 */
-	public function create_translation_set( $request ) {
+	public function create_item( $request ) {
 		$project_id = absint( $request->get_param( 'project_id' ) );
 		$project    = GP::$project->get( $project_id );
 		if ( ! $project ) {
@@ -214,7 +214,7 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function get_translation_set( $request ) {
+	public function get_item( $request ) {
 		$set_id = absint( $request->get_param( 'id' ) );
 		$set    = GP::$translation_set->get( $set_id );
 		if ( ! $set ) {
@@ -235,7 +235,7 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function edit_translation_set( $request ) {
+	public function update_item( $request ) {
 		$set_id = absint( $request->get_param( 'id' ) );
 		$set    = GP::$translation_set->get( $set_id );
 		if ( ! $set ) {
@@ -294,7 +294,7 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function delete_translation_set( $request ) {
+	public function delete_item( $request ) {
 		$set_id = absint( $request->get_param( 'id' ) );
 		$set    = GP::$translation_set->get( $set_id );
 		if ( ! $set ) {
@@ -320,7 +320,7 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function get_translation_sets_permissions_check( $request ) {
+	public function get_items_permissions_check( $request ) {
 		return true;
 	}
 
@@ -331,7 +331,7 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function create_translation_set_permissions_check( $request ) {
+	public function create_item_permissions_check( $request ) {
 		$project_id = absint( $request->get_param( 'project_id' ) );
 
 		return $this->current_user_can( 'write', 'project', $project_id );
@@ -344,7 +344,7 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function get_translation_set_permissions_check( $request ) {
+	public function get_item_permissions_check( $request ) {
 		return true;
 	}
 
@@ -355,7 +355,7 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function edit_translation_set_permissions_check( $request ) {
+	public function update_item_permissions_check( $request ) {
 		$translation_set_id = absint( $request->get_param( 'id' ) );
 		$translation_set    = GP::$translation_set->get( $translation_set_id );
 		if ( ! $translation_set ) {
@@ -372,7 +372,7 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function delete_translation_set_permissions_check( $request ) {
+	public function delete_item_permissions_check( $request ) {
 		$translation_set_id = absint( $request->get_param( 'id' ) );
 		$translation_set    = GP::$translation_set->get( $translation_set_id );
 		if ( ! $translation_set ) {

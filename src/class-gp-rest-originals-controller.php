@@ -44,8 +44,8 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_originals' ),
-					'permission_callback' => array( $this, 'get_originals_permissions_check' ),
+					'callback'            => array( $this, 'get_items' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
 					'args'                => array(
 						'project_id' => array(
 							'description'       => __( 'The ID of the project to retrieve originals for.', 'gp-rest' ),
@@ -65,8 +65,8 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_original' ),
-					'permission_callback' => array( $this, 'get_original_permissions_check' ),
+					'callback'            => array( $this, 'get_item' ),
+					'permission_callback' => array( $this, 'get_item_permissions_check' ),
 					'args'                => array(),
 				),
 			)
@@ -79,8 +79,8 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_original' ),
-					'permission_callback' => array( $this, 'delete_original_permissions_check' ),
+					'callback'            => array( $this, 'delete_item' ),
+					'permission_callback' => array( $this, 'delete_item_permissions_check' ),
 					'args'                => array(),
 				),
 			)
@@ -94,7 +94,7 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The response.
 	 */
-	public function get_originals( $request ) {
+	public function get_items( $request ) {
 		$project_id = absint( $request->get_param( 'project_id' ) );
 		if ( ! $project_id ) {
 			return $this->response_404_project_not_found();
@@ -120,7 +120,7 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function get_original( $request ) {
+	public function get_item( $request ) {
 		$original_id = absint( $request->get_param( 'id' ) );
 		$original    = GP::$original->get( $original_id );
 		if ( ! $original ) {
@@ -141,7 +141,7 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function delete_original( $request ) {
+	public function delete_item( $request ) {
 		$original_id = absint( $request->get_param( 'id' ) );
 		$original    = GP::$original->get( $original_id );
 		if ( ! $original ) {
@@ -167,7 +167,7 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function get_originals_permissions_check( $request ) {
+	public function get_items_permissions_check( $request ) {
 		return true;
 	}
 
@@ -178,7 +178,7 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function get_original_permissions_check( $request ) {
+	public function get_item_permissions_check( $request ) {
 		return true;
 	}
 
@@ -189,7 +189,7 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function delete_original_permissions_check( $request ) {
+	public function delete_item_permissions_check( $request ) {
 		$project_id = absint( $request->get_param( 'id' ) );
 
 		return $this->current_user_can( 'write', 'project', $project_id );

@@ -47,8 +47,8 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_translation' ),
-					'permission_callback' => array( $this, 'create_translation_permissions_check' ),
+					'callback'            => array( $this, 'create_item' ),
+					'permission_callback' => array( $this, 'create_item_permissions_check' ),
 					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
 				),
 			)
@@ -61,8 +61,8 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_translation' ),
-					'permission_callback' => array( $this, 'get_translation_permissions_check' ),
+					'callback'            => array( $this, 'get_item' ),
+					'permission_callback' => array( $this, 'get_item_permissions_check' ),
 					'args'                => array(),
 				),
 			)
@@ -75,8 +75,8 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'edit_translation' ),
-					'permission_callback' => array( $this, 'edit_translation_permissions_check' ),
+					'callback'            => array( $this, 'update_item' ),
+					'permission_callback' => array( $this, 'update_item_permissions_check' ),
 					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
 				),
 			)
@@ -89,8 +89,8 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_translation' ),
-					'permission_callback' => array( $this, 'delete_translation_permissions_check' ),
+					'callback'            => array( $this, 'delete_item' ),
+					'permission_callback' => array( $this, 'delete_item_permissions_check' ),
 					'args'                => array(),
 				),
 			)
@@ -104,7 +104,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function create_translation( $request ) {
+	public function create_item( $request ) {
 		$project_id = $request->get_param( 'project_id' );
 		$project    = GP::$project->get( $project_id );
 		if ( ! $project ) {
@@ -217,7 +217,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function get_translation( $request ) {
+	public function get_item( $request ) {
 		$translation_id = absint( $request->get_param( 'id' ) );
 		$translation    = GP::$translation->get( $translation_id );
 		if ( ! $translation ) {
@@ -238,7 +238,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function edit_translation( $request ) {
+	public function update_item( $request ) {
 		$translation_id = absint( $request->get_param( 'id' ) );
 		$translation    = GP::$translation->get( $translation_id );
 		if ( ! $translation ) {
@@ -321,7 +321,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function delete_translation( $request ) {
+	public function delete_item( $request ) {
 		$translation_id = absint( $request->get_param( 'id' ) );
 		$translation    = GP::$translation->get( $translation_id );
 		if ( ! $translation ) {
@@ -343,7 +343,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function create_translation_permissions_check( $request ) {
+	public function create_item_permissions_check( $request ) {
 		$translation_set_id = absint( $request->get_param( 'translation_set_id' ) );
 
 		return $this->current_user_can( 'edit', 'translation-set', $translation_set_id );
@@ -356,7 +356,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function get_translation_permissions_check( $request ) {
+	public function get_item_permissions_check( $request ) {
 		return true;
 	}
 
@@ -367,7 +367,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function edit_translation_permissions_check( $request ) {
+	public function update_item_permissions_check( $request ) {
 		$translation_id = absint( $request->get_param( 'id' ) );
 
 		return $this->current_user_can( 'approve', 'translation', $translation_id );
@@ -380,7 +380,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function delete_translation_permissions_check( $request ) {
+	public function delete_item_permissions_check( $request ) {
 		$translation_id = absint( $request->get_param( 'id' ) );
 
 		return $this->current_user_can( 'approve', 'translation', $translation_id );

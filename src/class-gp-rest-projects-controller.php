@@ -42,8 +42,8 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_projects' ),
-					'permission_callback' => array( $this, 'get_projects_permissions_check' ),
+					'callback'            => array( $this, 'get_items' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
 					'args'                => array(
 						'parent_project_id' => array(
 							'description'       => __( 'Filter projects by parent project ID.', 'gp-rest' ),
@@ -63,8 +63,8 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_project' ),
-					'permission_callback' => array( $this, 'create_project_permissions_check' ),
+					'callback'            => array( $this, 'create_item' ),
+					'permission_callback' => array( $this, 'create_item_permissions_check' ),
 					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
 				),
 			)
@@ -77,8 +77,8 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_project' ),
-					'permission_callback' => array( $this, 'get_project_permissions_check' ),
+					'callback'            => array( $this, 'get_item' ),
+					'permission_callback' => array( $this, 'get_item_permissions_check' ),
 					'args'                => array(),
 				),
 			)
@@ -91,8 +91,8 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'edit_project' ),
-					'permission_callback' => array( $this, 'edit_project_permissions_check' ),
+					'callback'            => array( $this, 'update_item' ),
+					'permission_callback' => array( $this, 'update_item_permissions_check' ),
 					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
 				),
 			)
@@ -105,8 +105,8 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_project' ),
-					'permission_callback' => array( $this, 'delete_project_permissions_check' ),
+					'callback'            => array( $this, 'delete_item' ),
+					'permission_callback' => array( $this, 'delete_item_permissions_check' ),
 					'args'                => array(),
 				),
 			)
@@ -120,7 +120,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The response.
 	 */
-	public function get_projects( $request ) {
+	public function get_items( $request ) {
 		$parent_project_id = absint( $request->get_param( 'parent_project_id' ) );
 		if ( $parent_project_id ) {
 			$parent_project = GP::$project->get( $parent_project_id );
@@ -150,7 +150,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The response.
 	 */
-	public function create_project( $request ) {
+	public function create_item( $request ) {
 		$name = sanitize_text_field( $request->get_param( 'name' ) );
 		$slug = sanitize_text_field( $request->get_param( 'slug' ) );
 		if ( empty( $name ) || empty( $slug ) ) {
@@ -211,7 +211,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The response.
 	 */
-	public function get_project( $request ) {
+	public function get_item( $request ) {
 		$project_id = absint( $request->get_param( 'id' ) );
 		$project    = GP::$project->get( $project_id );
 		if ( ! $project ) {
@@ -232,7 +232,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The response.
 	 */
-	public function edit_project( $request ) {
+	public function update_item( $request ) {
 		$project_id = absint( $request->get_param( 'id' ) );
 		$project    = GP::$project->get( $project_id );
 		if ( ! $project ) {
@@ -298,7 +298,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The response.
 	 */
-	public function delete_project( $request ) {
+	public function delete_item( $request ) {
 		$project_id = absint( $request->get_param( 'id' ) );
 		$project    = GP::$project->get( $project_id );
 		if ( ! $project ) {
@@ -323,7 +323,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function get_projects_permissions_check( $request ) {
+	public function get_items_permissions_check( $request ) {
 		return true;
 	}
 
@@ -334,7 +334,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function create_project_permissions_check( $request ) {
+	public function create_item_permissions_check( $request ) {
 		$parent_project_id = absint( $request->get_param( 'parent_project_id' ) );
 
 		return $this->current_user_can( 'write', 'project', $parent_project_id );
@@ -347,7 +347,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function get_project_permissions_check( $request ) {
+	public function get_item_permissions_check( $request ) {
 		return true;
 	}
 
@@ -358,7 +358,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function edit_project_permissions_check( $request ) {
+	public function update_item_permissions_check( $request ) {
 		$project_id = absint( $request->get_param( 'id' ) );
 
 		return $this->current_user_can( 'write', 'project', $project_id );
@@ -371,7 +371,7 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function delete_project_permissions_check( $request ) {
+	public function delete_item_permissions_check( $request ) {
 		$project_id = absint( $request->get_param( 'id' ) );
 
 		return $this->current_user_can( 'delete', 'project', $project_id );

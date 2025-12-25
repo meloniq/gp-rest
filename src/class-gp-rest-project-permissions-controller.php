@@ -44,8 +44,8 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_project_permissions' ),
-					'permission_callback' => array( $this, 'get_project_permissions_permissions_check' ),
+					'callback'            => array( $this, 'get_items' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
 					'args'                => array(),
 				),
 			)
@@ -58,8 +58,8 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_project_permission' ),
-					'permission_callback' => array( $this, 'create_project_permission_permissions_check' ),
+					'callback'            => array( $this, 'create_item' ),
+					'permission_callback' => array( $this, 'create_item_permissions_check' ),
 					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
 				),
 			)
@@ -72,8 +72,8 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_project_permission' ),
-					'permission_callback' => array( $this, 'get_project_permission_permissions_check' ),
+					'callback'            => array( $this, 'get_item' ),
+					'permission_callback' => array( $this, 'get_item_permissions_check' ),
 					'args'                => array(),
 				),
 			)
@@ -86,8 +86,8 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_project_permission' ),
-					'permission_callback' => array( $this, 'delete_project_permission_permissions_check' ),
+					'callback'            => array( $this, 'delete_item' ),
+					'permission_callback' => array( $this, 'delete_item_permissions_check' ),
 					'args'                => array(),
 				),
 			)
@@ -101,7 +101,7 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function get_project_permissions( WP_REST_Request $request ) {
+	public function get_items( $request ) {
 		$project_id = (int) $request->get_param( 'id' );
 		if ( ! $project_id ) {
 			return $this->response_404_project_not_found();
@@ -127,7 +127,7 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function create_project_permission( WP_REST_Request $request ) {
+	public function create_item( $request ) {
 		$project_id = (int) $request->get_param( 'id' );
 		if ( ! $project_id ) {
 			return $this->response_404_project_not_found();
@@ -181,7 +181,7 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function get_project_permission( WP_REST_Request $request ) {
+	public function get_item( $request ) {
 		$project_id = (int) $request->get_param( 'id' );
 		if ( ! $project_id ) {
 			return $this->response_404_project_not_found();
@@ -211,7 +211,7 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 	 *
 	 * @return WP_REST_Response The REST response.
 	 */
-	public function delete_project_permission( WP_REST_Request $request ) {
+	public function delete_item( $request ) {
 		$project_id = (int) $request->get_param( 'id' );
 		if ( ! $project_id ) {
 			return $this->response_404_project_not_found();
@@ -249,7 +249,7 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function get_project_permissions_permissions_check( $request ) {
+	public function get_items_permissions_check( $request ) {
 		return true;
 	}
 
@@ -260,7 +260,7 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function create_project_permission_permissions_check( $request ) {
+	public function create_item_permissions_check( $request ) {
 		$project_id = absint( $request->get_param( 'id' ) );
 
 		return $this->current_user_can( 'write', 'project', $project_id );
@@ -273,7 +273,7 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function get_project_permission_permissions_check( $request ) {
+	public function get_item_permissions_check( $request ) {
 		return true;
 	}
 
@@ -284,7 +284,7 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 	 *
 	 * @return bool True if the request has permission, false otherwise.
 	 */
-	public function delete_project_permission_permissions_check( $request ) {
+	public function delete_item_permissions_check( $request ) {
 		$project_id = absint( $request->get_param( 'id' ) );
 
 		return $this->current_user_can( 'write', 'project', $project_id );
