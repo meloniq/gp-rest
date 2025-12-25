@@ -279,7 +279,7 @@
 					"response": []
 				},
 				{
-					"name": "[PUT] Glossary Entry - Edit",
+					"name": "[PUT] Glossary Entry - Edit by Entry ID",
 					"request": {
 						"method": "PUT",
 						"header": [],
@@ -309,7 +309,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}/entries/{{entry_id}} by Entry ID",
+							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}/entries/{{entry_id}}",
 							"host": [
 								"{{api_url}}gp"
 							],
@@ -318,7 +318,7 @@
 								"glossaries",
 								"{{glossary_id}}",
 								"entries",
-								"{{entry_id}} by Entry ID"
+								"{{entry_id}}"
 							]
 						}
 					},
@@ -1019,37 +1019,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "--[PUT] Translation - Set Status by Translation ID",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "status",
-									"value": "approve",
-									"description": "reject, fuzzy, approve",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{api_url}}gp/v1/translations/{{translation_id}}/set-status",
-							"host": [
-								"{{api_url}}gp"
-							],
-							"path": [
-								"v1",
-								"translations",
-								"{{translation_id}}",
-								"set-status"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
@@ -1069,7 +1038,7 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/translation-sets?project_id=1",
+							"raw": "{{api_url}}gp/v1/translation-sets?project_id={{project_id}}",
 							"host": [
 								"{{api_url}}gp"
 							],
@@ -1080,7 +1049,7 @@
 							"query": [
 								{
 									"key": "project_id",
-									"value": "1"
+									"value": "{{project_id}}"
 								}
 							]
 						}
@@ -1232,7 +1201,7 @@
 			},
 			{
 				"key": "username",
-				"value": "admin",
+				"value": "username",
 				"type": "string"
 			}
 		]
