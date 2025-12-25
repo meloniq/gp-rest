@@ -45,7 +45,7 @@ class GP_REST_Languages_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_languages' ),
 					'permission_callback' => array( $this, 'get_languages_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -59,9 +59,15 @@ class GP_REST_Languages_Controller extends GP_REST_Controller {
 	 * @return WP_REST_Response The REST response.
 	 */
 	public function get_languages( $request ) {
-		$data = $this->get_locales();
+		$locales = $this->get_locales();
 
-		$response = new WP_REST_Response( $data, 200 );
+		$data = array();
+		foreach ( $locales as $locale ) {
+			$item   = $this->prepare_item_for_response( $locale, $request );
+			$data[] = $this->prepare_response_for_collection( $item );
+		}
+
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -105,5 +111,78 @@ class GP_REST_Languages_Controller extends GP_REST_Controller {
 	 */
 	private function sort_locales( $a, $b ) {
 		return $a->english_name <=> $b->english_name;
+	}
+
+	/**
+	 * Prepares a single language output for response.
+	 *
+	 * @param GP_Translation_Set $item    Language object.
+	 * @param WP_REST_Request    $request Request object.
+	 *
+	 * @return WP_REST_Response Response object.
+	 */
+	public function prepare_item_for_response( $item, $request ) {
+		// Restores the more descriptive, specific name for use within this method.
+		$language = $item;
+
+		$data = array(
+			'english_name' => $language->english_name,
+			'native_name'  => $language->native_name,
+			'code'         => $language->slug,
+		);
+
+		// Wrap the data in a response object.
+		$response = rest_ensure_response( $data );
+
+		/**
+		 * Filters a language returned from the REST API.
+		 * Allows modification of the language right before it is returned.
+		 *
+		 * @param WP_REST_Response   $response        The response object.
+		 * @param GP_Translation_Set $language The original object.
+		 * @param WP_REST_Request    $request         Request used to generate the response.
+		 */
+		return apply_filters( 'gp_rest_prepare_language', $response, $language, $request );
+	}
+
+	/**
+	 * Retrieves the language schema, conforming to JSON Schema.
+	 *
+	 * @return array
+	 */
+	public function get_item_schema() {
+		if ( $this->schema ) {
+			return $this->add_additional_fields_schema( $this->schema );
+		}
+
+		$schema = array(
+			'$schema'    => 'http://json-schema.org/draft-04/schema#',
+			'title'      => 'language',
+			'type'       => 'object',
+			'properties' => array(
+				'english_name' => array(
+					'description' => __( 'The English name of the language.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'native_name'  => array(
+					'description' => __( 'The native name of the language.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'code'         => array(
+					'description' => __( 'The language code.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+			),
+		);
+
+		$this->schema = $schema;
+
+		return $this->add_additional_fields_schema( $this->schema );
 	}
 }
