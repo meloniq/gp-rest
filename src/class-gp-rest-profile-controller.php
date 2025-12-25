@@ -141,9 +141,9 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 			'user_id'           => $user->ID,
 			'user_display_name' => $user->display_name,
 			'user_registered'   => $user->user_registered,
-			'recent_projects'   => $recent_projects, // Placeholder for projects the user contributes to.
-			'locales'           => $locales, // Placeholder for project locales the user contributes to.
-			'permissions'       => $permissions, // Placeholder for projects the user validates.
+			'recent_projects'   => $recent_projects,
+			'locales'           => $locales,
+			'permissions'       => $permissions,
 		);
 		$response = new WP_REST_Response( $data, 200 );
 
