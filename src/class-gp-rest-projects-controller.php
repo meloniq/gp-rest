@@ -389,15 +389,36 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 		// Restores the more descriptive, specific name for use within this method.
 		$project = $item;
 
-		$data = array(
-			'id'                  => $project->id,
-			'name'                => $project->name,
-			'slug'                => $project->slug,
-			'description'         => $project->description,
-			'source_url_template' => $project->source_url_template,
-			'parent_project_id'   => $project->parent_project_id,
-			'active'              => $project->active,
-		);
+		$fields = $this->get_fields_for_response( $request );
+		$data   = array();
+
+		if ( in_array( 'id', $fields, true ) ) {
+			$data['id'] = $project->id;
+		}
+
+		if ( in_array( 'name', $fields, true ) ) {
+			$data['name'] = $project->name;
+		}
+
+		if ( in_array( 'slug', $fields, true ) ) {
+			$data['slug'] = $project->slug;
+		}
+
+		if ( in_array( 'description', $fields, true ) ) {
+			$data['description'] = $project->description;
+		}
+
+		if ( in_array( 'source_url_template', $fields, true ) ) {
+			$data['source_url_template'] = $project->source_url_template;
+		}
+
+		if ( in_array( 'parent_project_id', $fields, true ) ) {
+			$data['parent_project_id'] = $project->parent_project_id;
+		}
+
+		if ( in_array( 'active', $fields, true ) ) {
+			$data['active'] = $project->active;
+		}
 
 		// Wrap the data in a response object.
 		$response = rest_ensure_response( $data );

@@ -394,13 +394,28 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 		// Restores the more descriptive, specific name for use within this method.
 		$translation_set = $item;
 
-		$data = array(
-			'id'         => $translation_set->id,
-			'project_id' => $translation_set->project_id,
-			'locale'     => $translation_set->locale,
-			'name'       => $translation_set->name,
-			'slug'       => $translation_set->slug,
-		);
+		$fields = $this->get_fields_for_response( $request );
+		$data   = array();
+
+		if ( in_array( 'id', $fields, true ) ) {
+			$data['id'] = $translation_set->id;
+		}
+
+		if ( in_array( 'project_id', $fields, true ) ) {
+			$data['project_id'] = $translation_set->project_id;
+		}
+
+		if ( in_array( 'locale', $fields, true ) ) {
+			$data['locale'] = $translation_set->locale;
+		}
+
+		if ( in_array( 'name', $fields, true ) ) {
+			$data['name'] = $translation_set->name;
+		}
+
+		if ( in_array( 'slug', $fields, true ) ) {
+			$data['slug'] = $translation_set->slug;
+		}
 
 		// Wrap the data in a response object.
 		$response = rest_ensure_response( $data );

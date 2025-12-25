@@ -302,14 +302,32 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 		// Restores the more descriptive, specific name for use within this method.
 		$permission = $item;
 
-		$data = array(
-			'id'          => $permission->id,
-			'user_id'     => $permission->user_id,
-			'project_id'  => $permission->project_id,
-			'action'      => $permission->action,
-			'locale_slug' => $permission->locale_slug,
-			'set_slug'    => $permission->set_slug,
-		);
+		$fields = $this->get_fields_for_response( $request );
+		$data   = array();
+
+		if ( in_array( 'id', $fields, true ) ) {
+			$data['id'] = $permission->id;
+		}
+
+		if ( in_array( 'user_id', $fields, true ) ) {
+			$data['user_id'] = $permission->user_id;
+		}
+
+		if ( in_array( 'project_id', $fields, true ) ) {
+			$data['project_id'] = $permission->project_id;
+		}
+
+		if ( in_array( 'action', $fields, true ) ) {
+			$data['action'] = $permission->action;
+		}
+
+		if ( in_array( 'locale_slug', $fields, true ) ) {
+			$data['locale_slug'] = $permission->locale_slug;
+		}
+
+		if ( in_array( 'set_slug', $fields, true ) ) {
+			$data['set_slug'] = $permission->set_slug;
+		}
 
 		// Wrap the data in a response object.
 		$response = rest_ensure_response( $data );

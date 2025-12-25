@@ -347,11 +347,20 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 		// Restores the more descriptive, specific name for use within this method.
 		$glossary = $item;
 
-		$data = array(
-			'id'                 => $glossary->id,
-			'translation_set_id' => $glossary->translation_set_id,
-			'description'        => $glossary->description,
-		);
+		$fields = $this->get_fields_for_response( $request );
+		$data   = array();
+
+		if ( in_array( 'id', $fields, true ) ) {
+			$data['id'] = $glossary->id;
+		}
+
+		if ( in_array( 'translation_set_id', $fields, true ) ) {
+			$data['translation_set_id'] = $glossary->translation_set_id;
+		}
+
+		if ( in_array( 'description', $fields, true ) ) {
+			$data['description'] = $glossary->description;
+		}
 
 		// Wrap the data in a response object.
 		$response = rest_ensure_response( $data );

@@ -94,12 +94,24 @@ class GP_REST_Formats_Controller extends GP_REST_Controller {
 		// Restores the more descriptive, specific name for use within this method.
 		$format = $item;
 
-		$data = array(
-			'name'             => $format->name,
-			'extension'        => $format->extension,
-			'alt_extensions'   => $format->alt_extensions,
-			'filename_pattern' => $format->filename_pattern,
-		);
+		$fields = $this->get_fields_for_response( $request );
+		$data   = array();
+
+		if ( in_array( 'name', $fields, true ) ) {
+			$data['name'] = $format->name;
+		}
+
+		if ( in_array( 'extension', $fields, true ) ) {
+			$data['extension'] = $format->extension;
+		}
+
+		if ( in_array( 'alt_extensions', $fields, true ) ) {
+			$data['alt_extensions'] = $format->alt_extensions;
+		}
+
+		if ( in_array( 'filename_pattern', $fields, true ) ) {
+			$data['filename_pattern'] = $format->filename_pattern;
+		}
 
 		// Wrap the data in a response object.
 		$response = rest_ensure_response( $data );

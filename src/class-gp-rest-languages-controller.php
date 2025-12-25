@@ -125,11 +125,20 @@ class GP_REST_Languages_Controller extends GP_REST_Controller {
 		// Restores the more descriptive, specific name for use within this method.
 		$language = $item;
 
-		$data = array(
-			'english_name' => $language->english_name,
-			'native_name'  => $language->native_name,
-			'code'         => $language->slug,
-		);
+		$fields = $this->get_fields_for_response( $request );
+		$data   = array();
+
+		if ( in_array( 'english_name', $fields, true ) ) {
+			$data['english_name'] = $language->english_name;
+		}
+
+		if ( in_array( 'native_name', $fields, true ) ) {
+			$data['native_name'] = $language->native_name;
+		}
+
+		if ( in_array( 'code', $fields, true ) ) {
+			$data['code'] = $language->slug;
+		}
 
 		// Wrap the data in a response object.
 		$response = rest_ensure_response( $data );

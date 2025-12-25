@@ -207,18 +207,48 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 		// Restores the more descriptive, specific name for use within this method.
 		$original = $item;
 
-		$data = array(
-			'id'         => $original->id,
-			'project_id' => $original->project_id,
-			'context'    => $original->context,
-			'singular'   => $original->singular,
-			'plural'     => $original->plural,
-			'comment'    => $original->comment,
-			'references' => $original->references,
-			'status'     => $original->status,
-			'priority'   => $original->priority,
-			'date_added' => mysql_to_rfc3339( $original->date_added ),
-		);
+		$fields = $this->get_fields_for_response( $request );
+		$data   = array();
+
+		if ( in_array( 'id', $fields, true ) ) {
+			$data['id'] = $original->id;
+		}
+
+		if ( in_array( 'project_id', $fields, true ) ) {
+			$data['project_id'] = $original->project_id;
+		}
+
+		if ( in_array( 'context', $fields, true ) ) {
+			$data['context'] = $original->context;
+		}
+
+		if ( in_array( 'singular', $fields, true ) ) {
+			$data['singular'] = $original->singular;
+		}
+
+		if ( in_array( 'plural', $fields, true ) ) {
+			$data['plural'] = $original->plural;
+		}
+
+		if ( in_array( 'comment', $fields, true ) ) {
+			$data['comment'] = $original->comment;
+		}
+
+		if ( in_array( 'references', $fields, true ) ) {
+			$data['references'] = $original->references;
+		}
+
+		if ( in_array( 'status', $fields, true ) ) {
+			$data['status'] = $original->status;
+		}
+
+		if ( in_array( 'priority', $fields, true ) ) {
+			$data['priority'] = $original->priority;
+		}
+
+		if ( in_array( 'date_added', $fields, true ) ) {
+			$data['date_added'] = mysql_to_rfc3339( $original->date_added );
+		}
 
 		// Wrap the data in a response object.
 		$response = rest_ensure_response( $data );

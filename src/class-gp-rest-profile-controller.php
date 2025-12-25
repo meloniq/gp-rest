@@ -72,17 +72,6 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 	}
 
 	/**
-	 * Permission check for getting the current user's profile.
-	 *
-	 * @param WP_REST_Request $request Full details about the request.
-	 *
-	 * @return bool True if the user has permission, false otherwise.
-	 */
-	public function get_self_profile_permissions_check( $request ) {
-		return is_user_logged_in();
-	}
-
-	/**
 	 * Retrieves the profile of the currently authenticated user.
 	 *
 	 * @param WP_REST_Request $request Full details about the request.
@@ -93,6 +82,38 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 		$current_user_id = get_current_user_id();
 		$request->set_param( 'id', $current_user_id );
 		return $this->get_item( $request );
+	}
+
+	/**
+	 * Retrieves a user's profile by ID.
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 *
+	 * @return WP_REST_Response Response object containing the user's profile data.
+	 */
+	public function get_item( $request ) {
+		$user_id = (int) $request->get_param( 'id' );
+		$user    = get_user_by( 'id', $user_id );
+		if ( ! $user ) {
+			return $this->response_404_user_not_found();
+		}
+
+		$data = $this->prepare_item_for_response( $user, $request );
+
+		$response = rest_ensure_response( $data );
+
+		return $response;
+	}
+
+	/**
+	 * Permission check for getting the current user's profile.
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 *
+	 * @return bool True if the user has permission, false otherwise.
+	 */
+	public function get_self_profile_permissions_check( $request ) {
+		return is_user_logged_in();
 	}
 
 	/**
@@ -120,34 +141,56 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 	}
 
 	/**
-	 * Retrieves a user's profile by ID.
+	 * Prepares a single user output for response.
 	 *
-	 * @param WP_REST_Request $request Full details about the request.
+	 * @param WP_User         $item    User object.
+	 * @param WP_REST_Request $request Request object.
 	 *
-	 * @return WP_REST_Response Response object containing the user's profile data.
+	 * @return WP_REST_Response Response object.
 	 */
-	public function get_item( $request ) {
-		$user_id = (int) $request->get_param( 'id' );
-		$user    = get_user_by( 'id', $user_id );
-		if ( ! $user ) {
-			return $this->response_404_user_not_found();
+	public function prepare_item_for_response( $item, $request ) {
+		// Restores the more descriptive, specific name for use within this method.
+		$user = $item;
+
+		$fields = $this->get_fields_for_response( $request );
+		$data   = array();
+
+		if ( in_array( 'user_id', $fields, true ) ) {
+			$data['user_id'] = $user->ID;
 		}
 
-		$recent_projects = $this->get_recent_translation_sets( $user, 5 );
-		$locales         = $this->locales_known( $user );
-		$permissions     = $this->get_permissions( $user );
+		if ( in_array( 'user_display_name', $fields, true ) ) {
+			$data['user_display_name'] = $user->display_name;
+		}
 
-		$data     = array(
-			'user_id'           => $user->ID,
-			'user_display_name' => $user->display_name,
-			'user_registered'   => $user->user_registered,
-			'recent_projects'   => $recent_projects,
-			'locales'           => $locales,
-			'permissions'       => $permissions,
-		);
-		$response = new WP_REST_Response( $data, 200 );
+		if ( in_array( 'user_registered', $fields, true ) ) {
+			$data['user_registered'] = $user->user_registered;
+		}
 
-		return $response;
+		if ( in_array( 'recent_projects', $fields, true ) ) {
+			$data['recent_projects'] = $this->get_recent_translation_sets( $user, 5 );
+		}
+
+		if ( in_array( 'locales', $fields, true ) ) {
+			$data['locales'] = $this->locales_known( $user );
+		}
+
+		if ( in_array( 'permissions', $fields, true ) ) {
+			$data['permissions'] = $this->get_permissions( $user );
+		}
+
+		// Wrap the data in a response object.
+		$response = rest_ensure_response( $data );
+
+		/**
+		 * Filters a user returned from the REST API.
+		 * Allows modification of the user right before it is returned.
+		 *
+		 * @param WP_REST_Response $response The response object.
+		 * @param WP_User          $user     The original object.
+		 * @param WP_REST_Request  $request  Request used to generate the response.
+		 */
+		return apply_filters( 'gp_rest_prepare_profile', $response, $user, $request );
 	}
 
 	/**

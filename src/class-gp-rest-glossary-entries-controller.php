@@ -390,15 +390,36 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 		// Restores the more descriptive, specific name for use within this method.
 		$entry = $item;
 
-		$data = array(
-			'id'             => $entry->id,
-			'glossary_id'    => $entry->glossary_id,
-			'term'           => $entry->term,
-			'translation'    => $entry->translation,
-			'part_of_speech' => $entry->part_of_speech,
-			'comment'        => $entry->comment,
-			'last_edited_by' => $entry->last_edited_by,
-		);
+		$fields = $this->get_fields_for_response( $request );
+		$data   = array();
+
+		if ( in_array( 'id', $fields, true ) ) {
+			$data['id'] = $entry->id;
+		}
+
+		if ( in_array( 'glossary_id', $fields, true ) ) {
+			$data['glossary_id'] = $entry->glossary_id;
+		}
+
+		if ( in_array( 'term', $fields, true ) ) {
+			$data['term'] = $entry->term;
+		}
+
+		if ( in_array( 'translation', $fields, true ) ) {
+			$data['translation'] = $entry->translation;
+		}
+
+		if ( in_array( 'part_of_speech', $fields, true ) ) {
+			$data['part_of_speech'] = $entry->part_of_speech;
+		}
+
+		if ( in_array( 'comment', $fields, true ) ) {
+			$data['comment'] = $entry->comment;
+		}
+
+		if ( in_array( 'last_edited_by', $fields, true ) ) {
+			$data['last_edited_by'] = $entry->last_edited_by;
+		}
 
 		// Wrap the data in a response object.
 		$response = rest_ensure_response( $data );
