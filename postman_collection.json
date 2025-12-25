@@ -15,12 +15,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}gp/v1/formats",
+							"raw": "{{api_url}}{{api_namespace}}/formats",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"formats"
 							]
 						}
@@ -45,12 +44,11 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/glossaries",
+							"raw": "{{api_url}}{{api_namespace}}/glossaries",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"glossaries"
 							]
 						}
@@ -78,12 +76,11 @@
 							]
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/glossaries",
+							"raw": "{{api_url}}{{api_namespace}}/glossaries",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"glossaries"
 							]
 						}
@@ -103,12 +100,11 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/glossaries/{{glossary_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"glossaries",
 								"{{glossary_id}}"
 							]
@@ -137,12 +133,11 @@
 							]
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/glossaries/{{glossary_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"glossaries",
 								"{{glossary_id}}"
 							]
@@ -160,12 +155,11 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/glossaries/{{glossary_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"glossaries",
 								"{{glossary_id}}"
 							]
@@ -191,12 +185,11 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}/entries",
+							"raw": "{{api_url}}{{api_namespace}}/glossaries/{{glossary_id}}/entries",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"glossaries",
 								"{{glossary_id}}",
 								"entries"
@@ -236,12 +229,11 @@
 							]
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}/entries",
+							"raw": "{{api_url}}{{api_namespace}}/glossaries/{{glossary_id}}/entries",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"glossaries",
 								"{{glossary_id}}",
 								"entries"
@@ -263,12 +255,11 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}/entries/{{entry_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/glossaries/{{glossary_id}}/entries/{{entry_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"glossaries",
 								"{{glossary_id}}",
 								"entries",
@@ -309,12 +300,11 @@
 							]
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}/entries/{{entry_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/glossaries/{{glossary_id}}/entries/{{entry_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"glossaries",
 								"{{glossary_id}}",
 								"entries",
@@ -325,7 +315,7 @@
 					"response": []
 				},
 				{
-					"name": "[DELETE] Glossary Entry - Delete",
+					"name": "[DELETE] Glossary Entry - Delete by Entry ID",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -334,16 +324,15 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/glossaries/{{glossary_id}}/entries/{{entry_id}} by Entry ID",
+							"raw": "{{api_url}}{{api_namespace}}/glossaries/{{glossary_id}}/entries/{{entry_id}} ",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"glossaries",
 								"{{glossary_id}}",
 								"entries",
-								"{{entry_id}} by Entry ID"
+								"{{entry_id}} "
 							]
 						}
 					},
@@ -360,12 +349,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}gp/v1/languages",
+							"raw": "{{api_url}}{{api_namespace}}/languages",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"languages"
 							]
 						}
@@ -383,12 +371,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}gp/v1/originals?project_id={{project_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/originals?project_id={{project_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"originals"
 							],
 							"query": [
@@ -402,56 +389,16 @@
 					"response": []
 				},
 				{
-					"name": "[POST] Originals - Import",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "project_id",
-									"value": "{{project_id}}",
-									"type": "text"
-								},
-								{
-									"key": "format",
-									"value": "auto",
-									"type": "text"
-								},
-								{
-									"key": "import-file",
-									"value": "#: src/class-gp-rest-glossary-entries-controller.php:167\n#: src/class-gp-rest-glossary-entries-controller.php:273\nmsgid \"Term and translation are required fields.\"\nmsgstr \"\"\n\n#: src/class-gp-rest-originals-controller.php:161\nmsgid \"The format parameter.\"\nmsgstr \"\"\n\n",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{api_url}}gp/v1/originals/import",
-							"host": [
-								"{{api_url}}gp"
-							],
-							"path": [
-								"v1",
-								"originals",
-								"import"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "[GET] Original - by Original ID",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}gp/v1/originals/{{original_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/originals/{{original_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"originals",
 								"{{original_id}}"
 							]
@@ -465,12 +412,11 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}gp/v1/originals/{{original_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/originals/{{original_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"originals",
 								"{{original_id}}"
 							]
@@ -489,12 +435,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}gp/v1/projects?parent_project_id=0",
+							"raw": "{{api_url}}{{api_namespace}}/projects?parent_project_id=0",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"projects"
 							],
 							"query": [
@@ -548,12 +493,11 @@
 							]
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/projects",
+							"raw": "{{api_url}}{{api_namespace}}/projects",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"projects"
 							]
 						}
@@ -566,12 +510,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}gp/v1/projects/{{project_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/projects/{{project_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"projects",
 								"{{project_id}}"
 							]
@@ -620,12 +563,11 @@
 							]
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/projects/{{project_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/projects/{{project_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"projects",
 								"{{project_id}}"
 							]
@@ -639,12 +581,11 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}gp/v1/projects/{{project_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/projects/{{project_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"projects",
 								"{{project_id}}"
 							]
@@ -670,12 +611,11 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/projects/{{project_id}}/permissions",
+							"raw": "{{api_url}}{{api_namespace}}/projects/{{project_id}}/permissions",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"projects",
 								"{{project_id}}",
 								"permissions"
@@ -710,12 +650,11 @@
 							]
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/projects/{{project_id}}/permissions",
+							"raw": "{{api_url}}{{api_namespace}}/projects/{{project_id}}/permissions",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"projects",
 								"{{project_id}}",
 								"permissions"
@@ -737,12 +676,11 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/projects/{{project_id}}/permissions/{{permission_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/projects/{{project_id}}/permissions/{{permission_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"projects",
 								"{{project_id}}",
 								"permissions",
@@ -762,12 +700,11 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/projects/{{project_id}}/permissions/{{permission_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/projects/{{project_id}}/permissions/{{permission_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"projects",
 								"{{project_id}}",
 								"permissions",
@@ -788,12 +725,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}gp/v1/profile/me",
+							"raw": "{{api_url}}{{api_namespace}}/profile/me",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"profile",
 								"me"
 							]
@@ -807,12 +743,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}gp/v1/profile/{{user_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/profile/{{user_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"profile",
 								"{{user_id}}"
 							]
@@ -891,12 +826,11 @@
 							]
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/translations",
+							"raw": "{{api_url}}{{api_namespace}}/translations",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"translations"
 							]
 						}
@@ -909,12 +843,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}gp/v1/translations/{{translation_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/translations/{{translation_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"translations",
 								"{{translation_id}}"
 							]
@@ -988,12 +921,11 @@
 							]
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/translations/{{translation_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/translations/{{translation_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"translations",
 								"{{translation_id}}"
 							]
@@ -1007,12 +939,11 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}gp/v1/translations/{{translation_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/translations/{{translation_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"translations",
 								"{{translation_id}}"
 							]
@@ -1026,7 +957,7 @@
 			"name": "translation-sets",
 			"item": [
 				{
-					"name": "[GET] Sets by Project ID",
+					"name": "[GET] Translation Sets by Project ID",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -1038,12 +969,11 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/translation-sets?project_id={{project_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/translation-sets?project_id={{project_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"translation-sets"
 							],
 							"query": [
@@ -1057,7 +987,7 @@
 					"response": []
 				},
 				{
-					"name": "[POST] Set - New",
+					"name": "[POST] Translation Set - New",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -1087,12 +1017,11 @@
 							]
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/translation-sets",
+							"raw": "{{api_url}}{{api_namespace}}/translation-sets",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"translation-sets"
 							]
 						}
@@ -1100,7 +1029,7 @@
 					"response": []
 				},
 				{
-					"name": "[GET] Set - Get by Set ID",
+					"name": "[GET] Translation Set - Get by Set ID",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -1112,12 +1041,11 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/translation-sets/{{set_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/translation-sets/{{set_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"translation-sets",
 								"{{set_id}}"
 							]
@@ -1126,7 +1054,7 @@
 					"response": []
 				},
 				{
-					"name": "[PUT] Set - Edit by Set ID",
+					"name": "[PUT] Translation Set - Edit by Set ID",
 					"request": {
 						"method": "PUT",
 						"header": [],
@@ -1156,12 +1084,11 @@
 							]
 						},
 						"url": {
-							"raw": "{{api_url}}gp/v1/translation-sets/{{set_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/translation-sets/{{set_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"translation-sets",
 								"{{set_id}}"
 							]
@@ -1170,17 +1097,16 @@
 					"response": []
 				},
 				{
-					"name": "[DELETE] Set - Delete by Set ID",
+					"name": "[DELETE] Translation Set - Delete by Set ID",
 					"request": {
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}gp/v1/translation-sets/{{set_id}}",
+							"raw": "{{api_url}}{{api_namespace}}/translation-sets/{{set_id}}",
 							"host": [
-								"{{api_url}}gp"
+								"{{api_url}}{{api_namespace}}"
 							],
 							"path": [
-								"v1",
 								"translation-sets",
 								"{{set_id}}"
 							]
@@ -1196,12 +1122,12 @@
 		"basic": [
 			{
 				"key": "password",
-				"value": "password",
+				"value": "{{api_password}}",
 				"type": "string"
 			},
 			{
 				"key": "username",
-				"value": "username",
+				"value": "{{api_username}}",
 				"type": "string"
 			}
 		]

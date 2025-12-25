@@ -20,7 +20,7 @@ abstract class GP_REST_Controller extends WP_REST_Controller {
 	 *
 	 * @var string
 	 */
-	protected $namespace = 'gp/v1';
+	protected $namespace = 'gp/v0.1';
 
 	/**
 	 * Constructor.
