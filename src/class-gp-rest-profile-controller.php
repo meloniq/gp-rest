@@ -45,7 +45,7 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_self_profile' ),
 					'permission_callback' => array( $this, 'get_self_profile_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -55,11 +55,17 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 			$this->namespace,
 			'/' . $this->rest_base . '/(?P<id>[\d]+)',
 			array(
+				'args' => array(
+					'id' => array(
+						'description' => __( 'Unique identifier for the user.', 'gp-rest' ),
+						'type'        => 'integer',
+					),
+				),
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_profile' ),
 					'permission_callback' => array( $this, 'get_profile_permissions_check' ),
-					'args'                => $this->get_collection_params(),
+					'args'                => array(),
 				),
 			)
 		);
@@ -142,5 +148,74 @@ class GP_REST_Profile_Controller extends GP_REST_Controller {
 		$response = new WP_REST_Response( $data, 200 );
 
 		return $response;
+	}
+
+	/**
+	 * Retrieves the user schema, conforming to JSON Schema.
+	 *
+	 * @return array
+	 */
+	public function get_item_schema() {
+		if ( $this->schema ) {
+			return $this->add_additional_fields_schema( $this->schema );
+		}
+
+		$schema = array(
+			'$schema'    => 'http://json-schema.org/draft-04/schema#',
+			'title'      => 'user',
+			'type'       => 'object',
+			'properties' => array(
+				'user_id'           => array(
+					'description' => __( 'Unique identifier for the user.', 'gp-rest' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'user_display_name' => array(
+					'description' => __( 'The display name of the user.', 'gp-rest' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'user_registered'   => array(
+					'description' => __( 'The date the user registered.', 'gp-rest' ),
+					'type'        => 'string',
+					'format'      => 'date-time',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+				),
+				'recent_projects'   => array(
+					'description' => __( 'Recent projects the user has contributed to.', 'gp-rest' ),
+					'type'        => 'array',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+					'items'       => array(
+						'type' => 'object',
+					),
+				),
+				'locales'           => array(
+					'description' => __( 'Locales the user is familiar with.', 'gp-rest' ),
+					'type'        => 'array',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+					'items'       => array(
+						'type' => 'array',
+					),
+				),
+				'permissions'       => array(
+					'description' => __( 'Permissions the user has.', 'gp-rest' ),
+					'type'        => 'array',
+					'context'     => array( 'view', 'edit', 'embed' ),
+					'readonly'    => true,
+					'items'       => array(
+						'type' => 'object',
+					),
+				),
+			),
+		);
+
+		$this->schema = $schema;
+
+		return $this->add_additional_fields_schema( $this->schema );
 	}
 }
