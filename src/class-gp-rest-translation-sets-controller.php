@@ -273,10 +273,12 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 			'slug'       => $slug,
 		);
 
-		$updated_set = GP::$translation_set->update( $data, array( 'id' => $set_id ) );
-		if ( ! $updated_set ) {
+		$updated = GP::$translation_set->update( $data, array( 'id' => $set_id ) );
+		if ( ! $updated ) {
 			return $this->response_500_translation_set_update_failed();
 		}
+
+		$updated_set = GP::$translation_set->get( $set_id );
 
 		$data = $this->prepare_item_for_response( $updated_set, $request );
 
@@ -330,8 +332,9 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 	 * @return bool True if the request has permission, false otherwise.
 	 */
 	public function create_translation_set_permissions_check( $request ) {
-		// Todo: Refine permission logic as needed.
-		return current_user_can( 'manage_options' );
+		$project_id = absint( $request->get_param( 'project_id' ) );
+
+		return $this->current_user_can( 'write', 'project', $project_id );
 	}
 
 	/**
@@ -353,8 +356,13 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 	 * @return bool True if the request has permission, false otherwise.
 	 */
 	public function edit_translation_set_permissions_check( $request ) {
-		// Todo: Refine permission logic as needed.
-		return current_user_can( 'manage_options' );
+		$translation_set_id = absint( $request->get_param( 'id' ) );
+		$translation_set    = GP::$translation_set->get( $translation_set_id );
+		if ( ! $translation_set ) {
+			return false;
+		}
+
+		return $this->current_user_can( 'write', 'project', $translation_set->project_id );
 	}
 
 	/**
@@ -365,8 +373,13 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 	 * @return bool True if the request has permission, false otherwise.
 	 */
 	public function delete_translation_set_permissions_check( $request ) {
-		// Todo: Refine permission logic as needed.
-		return current_user_can( 'manage_options' );
+		$translation_set_id = absint( $request->get_param( 'id' ) );
+		$translation_set    = GP::$translation_set->get( $translation_set_id );
+		if ( ! $translation_set ) {
+			return false;
+		}
+
+		return $this->current_user_can( 'delete', 'project', $translation_set->project_id );
 	}
 
 	/**

@@ -335,8 +335,9 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	 * @return bool True if the request has permission, false otherwise.
 	 */
 	public function create_project_permissions_check( $request ) {
-		// Todo: Refine permission logic as needed.
-		return current_user_can( 'manage_options' );
+		$parent_project_id = absint( $request->get_param( 'parent_project_id' ) );
+
+		return $this->current_user_can( 'write', 'project', $parent_project_id );
 	}
 
 	/**
@@ -358,8 +359,9 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	 * @return bool True if the request has permission, false otherwise.
 	 */
 	public function edit_project_permissions_check( $request ) {
-		// Todo: Refine permission logic as needed.
-		return current_user_can( 'manage_options' );
+		$project_id = absint( $request->get_param( 'id' ) );
+
+		return $this->current_user_can( 'write', 'project', $project_id );
 	}
 
 	/**
@@ -370,8 +372,9 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	 * @return bool True if the request has permission, false otherwise.
 	 */
 	public function delete_project_permissions_check( $request ) {
-		// Todo: Refine permission logic as needed.
-		return current_user_can( 'manage_options' );
+		$project_id = absint( $request->get_param( 'id' ) );
+
+		return $this->current_user_can( 'delete', 'project', $project_id );
 	}
 
 	/**

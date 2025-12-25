@@ -261,9 +261,9 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 	 * @return bool True if the request has permission, false otherwise.
 	 */
 	public function create_project_permission_permissions_check( $request ) {
-		// Todo: Refine permission logic as needed.
-		// $can_edit = $this->can( 'approve', 'translation-set', $translation_set->id );.
-		return current_user_can( 'manage_options' );
+		$project_id = absint( $request->get_param( 'id' ) );
+
+		return $this->current_user_can( 'write', 'project', $project_id );
 	}
 
 	/**
@@ -285,8 +285,9 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 	 * @return bool True if the request has permission, false otherwise.
 	 */
 	public function delete_project_permission_permissions_check( $request ) {
-		// Todo: Refine permission logic as needed.
-		return current_user_can( 'manage_options' );
+		$project_id = absint( $request->get_param( 'id' ) );
+
+		return $this->current_user_can( 'write', 'project', $project_id );
 	}
 
 	/**

@@ -168,11 +168,19 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 			}
 		}
 
+		$can_approve_set   = $this->current_user_can( 'approve', 'translation-set', $translation_set_id );
+		$can_write_project = $this->current_user_can( 'write', 'project', $project_id );
+		if ( $can_approve_set || $can_write_project ) {
+			$set_status = 'current';
+		} else {
+			$set_status = 'waiting';
+		}
+
 		$data = array(
 			'translation_set_id' => $translation_set_id,
 			'original_id'        => $original_id,
 			'user_id'            => get_current_user_id(),
-			'status'             => 'waiting',
+			'status'             => $set_status,
 			'warnings'           => $warnings,
 		);
 		$data = array_merge( $data, $translations );
@@ -336,9 +344,9 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 	 * @return bool True if the request has permission, false otherwise.
 	 */
 	public function create_translation_permissions_check( $request ) {
-		// Todo: Refine permission logic as needed.
-		// $can_edit = $this->can( 'approve', 'translation-set', $translation_set->id );.
-		return current_user_can( 'manage_options' );
+		$translation_set_id = absint( $request->get_param( 'translation_set_id' ) );
+
+		return $this->current_user_can( 'edit', 'translation-set', $translation_set_id );
 	}
 
 	/**
@@ -360,8 +368,9 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 	 * @return bool True if the request has permission, false otherwise.
 	 */
 	public function edit_translation_permissions_check( $request ) {
-		// Todo: Refine permission logic as needed.
-		return current_user_can( 'manage_options' );
+		$translation_id = absint( $request->get_param( 'id' ) );
+
+		return $this->current_user_can( 'approve', 'translation', $translation_id );
 	}
 
 	/**
@@ -372,8 +381,9 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 	 * @return bool True if the request has permission, false otherwise.
 	 */
 	public function delete_translation_permissions_check( $request ) {
-		// Todo: Refine permission logic as needed.
-		return current_user_can( 'manage_options' );
+		$translation_id = absint( $request->get_param( 'id' ) );
+
+		return $this->current_user_can( 'approve', 'translation', $translation_id );
 	}
 
 	/**

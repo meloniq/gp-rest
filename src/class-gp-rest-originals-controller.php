@@ -274,8 +274,9 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 	 * @return bool True if the request has permission, false otherwise.
 	 */
 	public function import_originals_permissions_check( $request ) {
-		// Todo: Refine permission logic as needed.
-		return current_user_can( 'manage_options' );
+		$project_id = absint( $request->get_param( 'project_id' ) );
+
+		return $this->current_user_can( 'write', 'project', $project_id );
 	}
 
 	/**
@@ -297,8 +298,9 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 	 * @return bool True if the request has permission, false otherwise.
 	 */
 	public function delete_original_permissions_check( $request ) {
-		// Todo: Refine permission logic as needed.
-		return current_user_can( 'manage_options' );
+		$project_id = absint( $request->get_param( 'id' ) );
+
+		return $this->current_user_can( 'write', 'project', $project_id );
 	}
 
 	/**
