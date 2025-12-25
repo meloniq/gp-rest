@@ -8,6 +8,7 @@
 namespace Meloniq\GpRest;
 
 use GP;
+use GP_Format;
 use WP_REST_Response;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -61,12 +62,8 @@ class GP_REST_Formats_Controller extends GP_REST_Controller {
 	public function get_formats( $request ) {
 		$data = array();
 		foreach ( GP::$formats as $format ) {
-			$data[] = array(
-				'name'             => $format->name,
-				'extension'        => $format->extension,
-				'alt_extensions'   => $format->alt_extensions,
-				'filename_pattern' => $format->filename_pattern,
-			);
+			$item   = $this->prepare_item_for_response( $format, $request );
+			$data[] = $this->prepare_response_for_collection( $item );
 		}
 
 		$response = new WP_REST_Response( $data, 200 );
@@ -83,5 +80,38 @@ class GP_REST_Formats_Controller extends GP_REST_Controller {
 	 */
 	public function get_formats_permissions_check( $request ) {
 		return true;
+	}
+
+	/**
+	 * Prepares a single format output for response.
+	 *
+	 * @param GP_Format       $item    Format object.
+	 * @param WP_REST_Request $request Request object.
+	 *
+	 * @return WP_REST_Response Response object.
+	 */
+	public function prepare_item_for_response( $item, $request ) {
+		// Restores the more descriptive, specific name for use within this method.
+		$format = $item;
+
+		$data = array(
+			'name'             => $format->name,
+			'extension'        => $format->extension,
+			'alt_extensions'   => $format->alt_extensions,
+			'filename_pattern' => $format->filename_pattern,
+		);
+
+		// Wrap the data in a response object.
+		$response = rest_ensure_response( $data );
+
+		/**
+		 * Filters a format returned from the REST API.
+		 * Allows modification of the format right before it is returned.
+		 *
+		 * @param WP_REST_Response  $response The response object.
+		 * @param GP_Format         $format   The original object.
+		 * @param WP_REST_Request   $request  Request used to generate the response.
+		 */
+		return apply_filters( 'gp_rest_prepare_format', $response, $format, $request );
 	}
 }

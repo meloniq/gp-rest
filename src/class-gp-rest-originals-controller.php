@@ -8,6 +8,7 @@
 namespace Meloniq\GpRest;
 
 use GP;
+use GP_Original;
 use WP_REST_Response;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -110,21 +111,11 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 
 		$data = array();
 		foreach ( $originals as $original ) {
-			$data[] = array(
-				'id'         => $original->id,
-				'project_id' => $original->project_id,
-				'context'    => $original->context,
-				'singular'   => $original->singular,
-				'plural'     => $original->plural,
-				'comment'    => $original->comment,
-				'references' => $original->references,
-				'status'     => $original->status,
-				'priority'   => $original->priority,
-				'date_added' => $original->date_added,
-			);
+			$item   = $this->prepare_item_for_response( $original, $request );
+			$data[] = $this->prepare_response_for_collection( $item );
 		}
 
-		$response = new WP_REST_Response( $data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -224,20 +215,9 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 			return $this->response_404_original_not_found();
 		}
 
-		$data = array(
-			'id'         => $original->id,
-			'project_id' => $original->project_id,
-			'context'    => $original->context,
-			'singular'   => $original->singular,
-			'plural'     => $original->plural,
-			'comment'    => $original->comment,
-			'references' => $original->references,
-			'status'     => $original->status,
-			'priority'   => $original->priority,
-			'date_added' => $original->date_added,
-		);
+		$data = $this->prepare_item_for_response( $original, $request );
 
-		$response = new WP_REST_Response( $data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -312,5 +292,44 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 	public function delete_original_permissions_check( $request ) {
 		// Todo: Refine permission logic as needed.
 		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Prepares a single original output for response.
+	 *
+	 * @param GP_Original     $item    Original object.
+	 * @param WP_REST_Request $request Request object.
+	 *
+	 * @return WP_REST_Response Response object.
+	 */
+	public function prepare_item_for_response( $item, $request ) {
+		// Restores the more descriptive, specific name for use within this method.
+		$original = $item;
+
+		$data = array(
+			'id'         => $original->id,
+			'project_id' => $original->project_id,
+			'context'    => $original->context,
+			'singular'   => $original->singular,
+			'plural'     => $original->plural,
+			'comment'    => $original->comment,
+			'references' => $original->references,
+			'status'     => $original->status,
+			'priority'   => $original->priority,
+			'date_added' => $original->date_added,
+		);
+
+		// Wrap the data in a response object.
+		$response = rest_ensure_response( $data );
+
+		/**
+		 * Filters a original returned from the REST API.
+		 * Allows modification of the original right before it is returned.
+		 *
+		 * @param WP_REST_Response  $response The response object.
+		 * @param GP_Original       $original The original object.
+		 * @param WP_REST_Request   $request  Request used to generate the response.
+		 */
+		return apply_filters( 'gp_rest_prepare_original', $response, $original, $request );
 	}
 }

@@ -127,18 +127,11 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 
 		$data = array();
 		foreach ( $projects as $project ) {
-			$data[] = array(
-				'id'                  => $project->id,
-				'name'                => $project->name,
-				'slug'                => $project->slug,
-				'description'         => $project->description,
-				'source_url_template' => $project->source_url_template,
-				'parent_project_id'   => $project->parent_project_id,
-				'active'              => $project->active,
-			);
+			$item   = $this->prepare_item_for_response( $project, $request );
+			$data[] = $this->prepare_response_for_collection( $item );
 		}
 
-		$response = new WP_REST_Response( $data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -196,17 +189,10 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 			return $this->response_500_project_creation_failed();
 		}
 
-		$response_data = array(
-			'id'                  => $project->id,
-			'name'                => $project->name,
-			'slug'                => $project->slug,
-			'description'         => $project->description,
-			'source_url_template' => $project->source_url_template,
-			'parent_project_id'   => $project->parent_project_id,
-			'active'              => $project->active,
-		);
+		$data = $this->prepare_item_for_response( $project, $request );
 
-		$response = new WP_REST_Response( $response_data, 201 );
+		$response = rest_ensure_response( $data );
+		$response->set_status( 201 );
 
 		return $response;
 	}
@@ -225,17 +211,9 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 			return $this->response_404_project_not_found();
 		}
 
-		$response_data = array(
-			'id'                  => $project->id,
-			'name'                => $project->name,
-			'slug'                => $project->slug,
-			'description'         => $project->description,
-			'source_url_template' => $project->source_url_template,
-			'parent_project_id'   => $project->parent_project_id,
-			'active'              => $project->active,
-		);
+		$data = $this->prepare_item_for_response( $project, $request );
 
-		$response = new WP_REST_Response( $response_data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -299,17 +277,9 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 
 		$updated_project = GP::$project->get( $project_id );
 
-		$response_data = array(
-			'id'                  => $updated_project->id,
-			'name'                => $updated_project->name,
-			'slug'                => $updated_project->slug,
-			'description'         => $updated_project->description,
-			'source_url_template' => $updated_project->source_url_template,
-			'parent_project_id'   => $updated_project->parent_project_id,
-			'active'              => $updated_project->active,
-		);
+		$data = $this->prepare_item_for_response( $updated_project, $request );
 
-		$response = new WP_REST_Response( $response_data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -395,5 +365,41 @@ class GP_REST_Projects_Controller extends GP_REST_Controller {
 	public function delete_project_permissions_check( $request ) {
 		// Todo: Refine permission logic as needed.
 		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Prepares a single project output for response.
+	 *
+	 * @param GP_Project      $item    Project object.
+	 * @param WP_REST_Request $request Request object.
+	 *
+	 * @return WP_REST_Response Response object.
+	 */
+	public function prepare_item_for_response( $item, $request ) {
+		// Restores the more descriptive, specific name for use within this method.
+		$project = $item;
+
+		$data = array(
+			'id'                  => $project->id,
+			'name'                => $project->name,
+			'slug'                => $project->slug,
+			'description'         => $project->description,
+			'source_url_template' => $project->source_url_template,
+			'parent_project_id'   => $project->parent_project_id,
+			'active'              => $project->active,
+		);
+
+		// Wrap the data in a response object.
+		$response = rest_ensure_response( $data );
+
+		/**
+		 * Filters a project returned from the REST API.
+		 * Allows modification of the project right before it is returned.
+		 *
+		 * @param WP_REST_Response  $response The response object.
+		 * @param GP_Project        $project   The original object.
+		 * @param WP_REST_Request   $request  Request used to generate the response.
+		 */
+		return apply_filters( 'gp_rest_prepare_project', $response, $project, $request );
 	}
 }

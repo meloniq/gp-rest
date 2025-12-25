@@ -8,6 +8,7 @@
 namespace Meloniq\GpRest;
 
 use GP;
+use GP_Glossary;
 use WP_REST_Response;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -120,14 +121,11 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 		$data = array();
 
 		foreach ( $glossaries as $glossary ) {
-			$data[] = array(
-				'id'                 => $glossary->id,
-				'translation_set_id' => $glossary->translation_set_id,
-				'description'        => $glossary->description,
-			);
+			$item   = $this->prepare_item_for_response( $glossary, $request );
+			$data[] = $this->prepare_response_for_collection( $item );
 		}
 
-		$response = new WP_REST_Response( $data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -171,13 +169,10 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 			return $this->response_500_glossary_creation_failed();
 		}
 
-		$data = array(
-			'id'                 => $glossary->id,
-			'translation_set_id' => $glossary->translation_set_id,
-			'description'        => $glossary->description,
-		);
+		$data = $this->prepare_item_for_response( $glossary, $request );
 
-		$response = new WP_REST_Response( $data, 201 );
+		$response = rest_ensure_response( $data );
+		$response->set_status( 201 );
 
 		return $response;
 	}
@@ -196,13 +191,9 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 			return $this->response_404_glossary_not_found();
 		}
 
-		$data = array(
-			'id'                 => $glossary->id,
-			'translation_set_id' => $glossary->translation_set_id,
-			'description'        => $glossary->description,
-		);
+		$data = $this->prepare_item_for_response( $glossary, $request );
 
-		$response = new WP_REST_Response( $data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -242,13 +233,11 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 			return $this->response_500_glossary_update_failed();
 		}
 
-		$data = array(
-			'id'                 => $glossary_id,
-			'translation_set_id' => $translation_set_id,
-			'description'        => $description,
-		);
+		$glossary = GP::$glossary->get( $glossary_id );
 
-		$response = new WP_REST_Response( $data, 200 );
+		$data = $this->prepare_item_for_response( $glossary, $request );
+
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -333,5 +322,37 @@ class GP_REST_Glossaries_Controller extends GP_REST_Controller {
 	public function delete_glossary_permissions_check( $request ) {
 		// Todo: Refine permission logic as needed.
 		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Prepares a single glossary output for response.
+	 *
+	 * @param GP_Glossary     $item    Glossary object.
+	 * @param WP_REST_Request $request Request object.
+	 *
+	 * @return WP_REST_Response Response object.
+	 */
+	public function prepare_item_for_response( $item, $request ) {
+		// Restores the more descriptive, specific name for use within this method.
+		$glossary = $item;
+
+		$data = array(
+			'id'                 => $glossary->id,
+			'translation_set_id' => $glossary->translation_set_id,
+			'description'        => $glossary->description,
+		);
+
+		// Wrap the data in a response object.
+		$response = rest_ensure_response( $data );
+
+		/**
+		 * Filters a glossary returned from the REST API.
+		 * Allows modification of the glossary right before it is returned.
+		 *
+		 * @param WP_REST_Response  $response The response object.
+		 * @param GP_Glossary       $glossary The original object.
+		 * @param WP_REST_Request   $request  Request used to generate the response.
+		 */
+		return apply_filters( 'gp_rest_prepare_glossary', $response, $glossary, $request );
 	}
 }

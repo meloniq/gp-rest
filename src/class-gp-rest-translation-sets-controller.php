@@ -9,6 +9,7 @@ namespace Meloniq\GpRest;
 
 use GP;
 use GP_Locales;
+use GP_Translation_Set;
 use WP_REST_Response;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -128,16 +129,11 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 
 		$data = array();
 		foreach ( $sets as $set ) {
-			$data[] = array(
-				'id'         => $set->id,
-				'project_id' => $set->project_id,
-				'locale'     => $set->locale,
-				'name'       => $set->name,
-				'slug'       => $set->slug,
-			);
+			$item   = $this->prepare_item_for_response( $set, $request );
+			$data[] = $this->prepare_response_for_collection( $item );
 		}
 
-		$response = new WP_REST_Response( $data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -196,15 +192,10 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 			return $this->response_500_translation_set_creation_failed();
 		}
 
-		$response_data = array(
-			'id'         => $set->id,
-			'project_id' => $set->project_id,
-			'locale'     => $set->locale,
-			'name'       => $set->name,
-			'slug'       => $set->slug,
-		);
+		$data = $this->prepare_item_for_response( $set, $request );
 
-		$response = new WP_REST_Response( $response_data, 201 );
+		$response = rest_ensure_response( $data );
+		$response->set_status( 201 );
 
 		return $response;
 	}
@@ -223,15 +214,9 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 			return $this->response_404_translation_set_not_found();
 		}
 
-		$data = array(
-			'id'         => $set->id,
-			'project_id' => $set->project_id,
-			'locale'     => $set->locale,
-			'name'       => $set->name,
-			'slug'       => $set->slug,
-		);
+		$data = $this->prepare_item_for_response( $set, $request );
 
-		$response = new WP_REST_Response( $data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -286,15 +271,9 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 			return $this->response_500_translation_set_update_failed();
 		}
 
-		$response_data = array(
-			'id'         => $updated_set->id,
-			'project_id' => $updated_set->project_id,
-			'locale'     => $updated_set->locale,
-			'name'       => $updated_set->name,
-			'slug'       => $updated_set->slug,
-		);
+		$data = $this->prepare_item_for_response( $updated_set, $request );
 
-		$response = new WP_REST_Response( $response_data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -381,5 +360,39 @@ class GP_REST_Translation_Sets_Controller extends GP_REST_Controller {
 	public function delete_translation_set_permissions_check( $request ) {
 		// Todo: Refine permission logic as needed.
 		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Prepares a single translation set output for response.
+	 *
+	 * @param GP_Translation_Set $item    Translation set object.
+	 * @param WP_REST_Request    $request Request object.
+	 *
+	 * @return WP_REST_Response Response object.
+	 */
+	public function prepare_item_for_response( $item, $request ) {
+		// Restores the more descriptive, specific name for use within this method.
+		$translation_set = $item;
+
+		$data = array(
+			'id'         => $translation_set->id,
+			'project_id' => $translation_set->project_id,
+			'locale'     => $translation_set->locale,
+			'name'       => $translation_set->name,
+			'slug'       => $translation_set->slug,
+		);
+
+		// Wrap the data in a response object.
+		$response = rest_ensure_response( $data );
+
+		/**
+		 * Filters a translation set returned from the REST API.
+		 * Allows modification of the translation set right before it is returned.
+		 *
+		 * @param WP_REST_Response   $response        The response object.
+		 * @param GP_Translation_Set $translation_set The original object.
+		 * @param WP_REST_Request    $request         Request used to generate the response.
+		 */
+		return apply_filters( 'gp_rest_prepare_translation_set', $response, $translation_set, $request );
 	}
 }

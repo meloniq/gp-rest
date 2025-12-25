@@ -9,6 +9,7 @@ namespace Meloniq\GpRest;
 
 use GP;
 use GP_Locales;
+use GP_Translation;
 use WP_REST_Response;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -127,8 +128,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 			return $this->response_404_original_not_found();
 		}
 
-		// Reduce range by one since we're starting at 0, see GH#516.
-		$range = range( 0, GP::$translation->get_static( 'number_of_plural_translations' ) - 1 );
+		$range = $this->get_translations_range();
 
 		$translations = array();
 		foreach ( $range as $index ) {
@@ -194,24 +194,10 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 			);
 		}
 
-		$translations = array();
-		foreach ( $range as $index ) {
-			$tr_id = 'translation_' . $index;
-			if ( ! empty( $new_translation->$tr_id ) ) {
-				$translations[ 'translation_' . $index ] = $new_translation->$tr_id;
-			}
-		}
+		$data = $this->prepare_item_for_response( $new_translation, $request );
 
-		$response_data = array(
-			'id'                 => $new_translation->id,
-			'translation_set_id' => $new_translation->translation_set_id,
-			'original_id'        => $new_translation->original_id,
-			'translations'       => $translations,
-			'status'             => $new_translation->status,
-			'warnings'           => $new_translation->warnings,
-		);
-
-		$response = new WP_REST_Response( $response_data, 201 );
+		$response = rest_ensure_response( $data );
+		$response->set_status( 201 );
 
 		return $response;
 	}
@@ -230,27 +216,9 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 			return $this->response_404_translation_not_found();
 		}
 
-		// Reduce range by one since we're starting at 0, see GH#516.
-		$range = range( 0, GP::$translation->get_static( 'number_of_plural_translations' ) - 1 );
+		$data = $this->prepare_item_for_response( $translation, $request );
 
-		$translations = array();
-		foreach ( $range as $index ) {
-			$tr_id = 'translation_' . $index;
-			if ( ! empty( $translation->$tr_id ) ) {
-				$translations[ 'translation_' . $index ] = $translation->$tr_id;
-			}
-		}
-
-		$data = array(
-			'id'                 => $translation->id,
-			'translation_set_id' => $translation->translation_set_id,
-			'original_id'        => $translation->original_id,
-			'translations'       => $translations,
-			'status'             => $translation->status,
-			'warnings'           => $translation->warnings,
-		);
-
-		$response = new WP_REST_Response( $data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -292,8 +260,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 			return $this->response_404_original_not_found();
 		}
 
-		// Reduce range by one since we're starting at 0, see GH#516.
-		$range = range( 0, GP::$translation->get_static( 'number_of_plural_translations' ) - 1 );
+		$range = $this->get_translations_range();
 
 		$translations = array();
 		foreach ( $range as $index ) {
@@ -332,24 +299,9 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 
 		$updated_translation = GP::$translation->get( $translation_id );
 
-		$translations = array();
-		foreach ( $range as $index ) {
-			$tr_id = 'translation_' . $index;
-			if ( ! empty( $updated_translation->$tr_id ) ) {
-				$translations[ 'translation_' . $index ] = $updated_translation->$tr_id;
-			}
-		}
+		$data = $this->prepare_item_for_response( $updated_translation, $request );
 
-		$response_data = array(
-			'id'                 => $updated_translation->id,
-			'translation_set_id' => $updated_translation->translation_set_id,
-			'original_id'        => $updated_translation->original_id,
-			'translations'       => $translations,
-			'status'             => $updated_translation->status,
-			'warnings'           => $updated_translation->warnings,
-		);
-
-		$response = new WP_REST_Response( $response_data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -422,5 +374,71 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 	public function delete_translation_permissions_check( $request ) {
 		// Todo: Refine permission logic as needed.
 		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Prepares a single translation output for response.
+	 *
+	 * @param GP_Translation  $item    Translation object.
+	 * @param WP_REST_Request $request Request object.
+	 *
+	 * @return WP_REST_Response Response object.
+	 */
+	public function prepare_item_for_response( $item, $request ) {
+		// Restores the more descriptive, specific name for use within this method.
+		$translation = $item;
+
+		$data = array(
+			'id'                 => $translation->id,
+			'translation_set_id' => $translation->translation_set_id,
+			'original_id'        => $translation->original_id,
+			'translations'       => $this->get_translations_data( $translation ),
+			'status'             => $translation->status,
+			'warnings'           => $translation->warnings,
+		);
+
+		// Wrap the data in a response object.
+		$response = rest_ensure_response( $data );
+
+		/**
+		 * Filters a translation returned from the REST API.
+		 * Allows modification of the translation right before it is returned.
+		 *
+		 * @param WP_REST_Response  $response    The response object.
+		 * @param GP_Translation    $translation The original object.
+		 * @param WP_REST_Request   $request     Request used to generate the response.
+		 */
+		return apply_filters( 'gp_rest_prepare_translation', $response, $translation, $request );
+	}
+
+	/**
+	 * Get translations data.
+	 *
+	 * @param GP_Translation $translation Translation object.
+	 *
+	 * @return array Translations.
+	 */
+	protected function get_translations_data( $translation ) {
+		$range = $this->get_translations_range();
+
+		$translations = array();
+		foreach ( $range as $index ) {
+			$tr_id = 'translation_' . $index;
+			if ( ! empty( $translation->$tr_id ) ) {
+				$translations[ 'translation_' . $index ] = $translation->$tr_id;
+			}
+		}
+
+		return $translations;
+	}
+
+	/**
+	 * Get translations range.
+	 *
+	 * @return array Range of translation indexes.
+	 */
+	protected function get_translations_range() {
+		// Reduce range by one since we're starting at 0, see GH#516.
+		return range( 0, GP::$translation->get_static( 'number_of_plural_translations' ) - 1 );
 	}
 }

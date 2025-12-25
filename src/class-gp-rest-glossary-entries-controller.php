@@ -122,21 +122,15 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 			return $this->response_404_glossary_not_found();
 		}
 
-		$entries = $glossary->get_glossary_entries();
-		$data    = array();
+		$entries = GP::$glossary_entry->by_glossary_id( $glossary_id );
+
+		$data = array();
 		foreach ( $entries as $entry ) {
-			$data[] = array(
-				'glossary_id'    => $entry->glossary_id,
-				'id'             => $entry->id,
-				'term'           => $entry->term,
-				'translation'    => $entry->translation,
-				'part_of_speech' => $entry->part_of_speech,
-				'comment'        => $entry->comment,
-				'last_edited_by' => $entry->last_edited_by,
-			);
+			$item   = $this->prepare_item_for_response( $entry, $request );
+			$data[] = $this->prepare_response_for_collection( $item );
 		}
 
-		$response = new WP_REST_Response( $data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -191,17 +185,10 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 			return $this->response_500_glossary_entry_creation_failed();
 		}
 
-		$data = array(
-			'glossary_id'    => $created_glossary_entry->glossary_id,
-			'id'             => $created_glossary_entry->id,
-			'term'           => $created_glossary_entry->term,
-			'translation'    => $created_glossary_entry->translation,
-			'part_of_speech' => $created_glossary_entry->part_of_speech,
-			'comment'        => $created_glossary_entry->comment,
-			'last_edited_by' => $created_glossary_entry->last_edited_by,
-		);
+		$data = $this->prepare_item_for_response( $created_glossary_entry, $request );
 
-		$response = new WP_REST_Response( $data, 201 );
+		$response = rest_ensure_response( $data );
+		$response->set_status( 201 );
 
 		return $response;
 	}
@@ -226,17 +213,9 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 			return $this->response_404_glossary_entry_not_found();
 		}
 
-		$data = array(
-			'glossary_id'    => $entry->glossary_id,
-			'id'             => $entry->id,
-			'term'           => $entry->term,
-			'translation'    => $entry->translation,
-			'part_of_speech' => $entry->part_of_speech,
-			'comment'        => $entry->comment,
-			'last_edited_by' => $entry->last_edited_by,
-		);
+		$data = $this->prepare_item_for_response( $entry, $request );
 
-		$response = new WP_REST_Response( $data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -287,17 +266,9 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 			return $this->response_500_glossary_entry_update_failed();
 		}
 
-		$data = array(
-			'glossary_id'    => $entry->glossary_id,
-			'id'             => $entry->id,
-			'term'           => $entry->term,
-			'translation'    => $entry->translation,
-			'part_of_speech' => $entry->part_of_speech,
-			'comment'        => $entry->comment,
-			'last_edited_by' => $entry->last_edited_by,
-		);
+		$data = $this->prepare_item_for_response( $entry, $request );
 
-		$response = new WP_REST_Response( $data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -391,5 +362,41 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 	public function delete_glossary_entry_permissions_check( $request ) {
 		// Todo: Refine permission logic as needed.
 		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Prepares a single glossary entry output for response.
+	 *
+	 * @param GP_Glossary_Entry $item    Glossary entry object.
+	 * @param WP_REST_Request   $request Request object.
+	 *
+	 * @return WP_REST_Response Response object.
+	 */
+	public function prepare_item_for_response( $item, $request ) {
+		// Restores the more descriptive, specific name for use within this method.
+		$entry = $item;
+
+		$data = array(
+			'glossary_id'    => $entry->glossary_id,
+			'id'             => $entry->id,
+			'term'           => $entry->term,
+			'translation'    => $entry->translation,
+			'part_of_speech' => $entry->part_of_speech,
+			'comment'        => $entry->comment,
+			'last_edited_by' => $entry->last_edited_by,
+		);
+
+		// Wrap the data in a response object.
+		$response = rest_ensure_response( $data );
+
+		/**
+		 * Filters a glossary entry returned from the REST API.
+		 * Allows modification of the glossary entry right before it is returned.
+		 *
+		 * @param WP_REST_Response  $response The response object.
+		 * @param GP_Glossary_Entry $entry    The original object.
+		 * @param WP_REST_Request   $request  Request used to generate the response.
+		 */
+		return apply_filters( 'gp_rest_prepare_glossary_entry', $response, $entry, $request );
 	}
 }

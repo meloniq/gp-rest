@@ -9,6 +9,7 @@ namespace Meloniq\GpRest;
 
 use GP;
 use GP_Locales;
+use GP_Validator_Permission;
 use WP_REST_Response;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -110,17 +111,11 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 
 		$data = array();
 		foreach ( $permissions as $permission ) {
-			$data[] = array(
-				'id'          => $permission->id,
-				'user_id'     => $permission->user_id,
-				'project_id'  => $permission->project_id,
-				'action'      => $permission->action,
-				'locale_slug' => $permission->locale_slug,
-				'set_slug'    => $permission->set_slug,
-			);
+			$item   = $this->prepare_item_for_response( $permission, $request );
+			$data[] = $this->prepare_response_for_collection( $item );
 		}
 
-		$response = new WP_REST_Response( $data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -171,16 +166,10 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 			return $this->response_500_project_permission_creation_failed();
 		}
 
-		$data = array(
-			'id'          => $permission->id,
-			'user_id'     => $permission->user_id,
-			'project_id'  => $permission->project_id,
-			'action'      => $permission->action,
-			'locale_slug' => $permission->locale_slug,
-			'set_slug'    => $permission->set_slug,
-		);
+		$data = $this->prepare_item_for_response( $permission, $request );
 
-		$response = new WP_REST_Response( $data, 201 );
+		$response = rest_ensure_response( $data );
+		$response->set_status( 201 );
 
 		return $response;
 	}
@@ -208,16 +197,9 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 			return $this->response_404_project_permission_not_found();
 		}
 
-		$data = array(
-			'id'          => $permission->id,
-			'user_id'     => $permission->user_id,
-			'project_id'  => $permission->project_id,
-			'action'      => $permission->action,
-			'locale_slug' => $permission->locale_slug,
-			'set_slug'    => $permission->set_slug,
-		);
+		$data = $this->prepare_item_for_response( $permission, $request );
 
-		$response = new WP_REST_Response( $data, 200 );
+		$response = rest_ensure_response( $data );
 
 		return $response;
 	}
@@ -305,5 +287,40 @@ class GP_REST_Project_Permissions_Controller extends GP_REST_Controller {
 	public function delete_project_permission_permissions_check( $request ) {
 		// Todo: Refine permission logic as needed.
 		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Prepares a single project permission output for response.
+	 *
+	 * @param GP_Validator_Permission $item    Project permission object.
+	 * @param WP_REST_Request         $request Request object.
+	 *
+	 * @return WP_REST_Response Response object.
+	 */
+	public function prepare_item_for_response( $item, $request ) {
+		// Restores the more descriptive, specific name for use within this method.
+		$permission = $item;
+
+		$data = array(
+			'id'          => $permission->id,
+			'user_id'     => $permission->user_id,
+			'project_id'  => $permission->project_id,
+			'action'      => $permission->action,
+			'locale_slug' => $permission->locale_slug,
+			'set_slug'    => $permission->set_slug,
+		);
+
+		// Wrap the data in a response object.
+		$response = rest_ensure_response( $data );
+
+		/**
+		 * Filters a project permission returned from the REST API.
+		 * Allows modification of the project permission right before it is returned.
+		 *
+		 * @param WP_REST_Response        $response The response object.
+		 * @param GP_Validator_Permission $permission   The original object.
+		 * @param WP_REST_Request         $request  Request used to generate the response.
+		 */
+		return apply_filters( 'gp_rest_prepare_project_permission', $response, $permission, $request );
 	}
 }
