@@ -38,7 +38,19 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 	 */
 	public function register_routes() {
 
-		// GET translations?? .
+		// GET translations .
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_items' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+					'args'                => array(),
+				),
+			)
+		);
 
 		// POST translations .
 		register_rest_route(
@@ -95,6 +107,49 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Handles GET requests to /translations endpoint.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function get_items( $request ) {
+		$project_id = $request->get_param( 'project_id' );
+		$project    = GP::$project->get( $project_id );
+		if ( ! $project ) {
+			return $this->response_404_project_not_found();
+		}
+
+		$translation_set_id = absint( $request->get_param( 'translation_set_id' ) );
+		$translation_set    = GP::$translation_set->get( $translation_set_id );
+		if ( ! $translation_set ) {
+			return $this->response_404_translation_set_not_found();
+		}
+
+		$page = $request->get_param( 'page' ) ? absint( $request->get_param( 'page' ) ) : 1;
+
+		$filters = $this->get_items_filters_param( $request );
+		$sort    = $this->get_items_sort_param( $request );
+
+		GP::$translation->per_page = $this->get_items_per_page_limit( $request );
+
+		$translations = GP::$translation->for_translation( $project, $translation_set, $page, $filters, $sort );
+		$total_items  = GP::$translation->found_rows;
+
+		$data = array();
+		foreach ( $translations as $translation ) {
+			$item   = $this->prepare_item_for_response( $translation, $request );
+			$data[] = $this->prepare_response_for_collection( $item );
+		}
+
+		$response = rest_ensure_response( $data );
+
+		$response->header( 'X-WP-Total', $total_items );
+
+		return $response;
 	}
 
 	/**
@@ -337,6 +392,17 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 	}
 
 	/**
+	 * Permission check for retrieving translations.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return bool True if the request has permission, false otherwise.
+	 */
+	public function get_items_permissions_check( $request ) {
+		return true;
+	}
+
+	/**
 	 * Permission check for creating a new translation.
 	 *
 	 * @param WP_REST_Request $request The REST request.
@@ -508,10 +574,16 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 		$range = $this->get_translations_range();
 
 		$translations = array();
-		foreach ( $range as $index ) {
-			$tr_id = 'translation_' . $index;
-			if ( ! empty( $translation->$tr_id ) ) {
-				$translations[ 'translation_' . $index ] = $translation->$tr_id;
+		if ( ! empty( $translation->translations ) ) {
+			foreach ( $translation->translations as $index => $text ) {
+				$translations[ 'translation_' . $index ] = $text;
+			}
+		} else {
+			foreach ( $range as $index ) {
+				$tr_id = 'translation_' . $index;
+				if ( ! empty( $translation->$tr_id ) ) {
+					$translations[ 'translation_' . $index ] = $translation->$tr_id;
+				}
 			}
 		}
 
