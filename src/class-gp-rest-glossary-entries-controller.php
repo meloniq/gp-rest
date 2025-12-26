@@ -132,6 +132,9 @@ class GP_REST_Glossary_Entries_Controller extends GP_REST_Controller {
 
 		$response = rest_ensure_response( $data );
 
+		$total_items = count( $data );
+		$response->header( 'X-WP-Total', $total_items );
+
 		return $response;
 	}
 
