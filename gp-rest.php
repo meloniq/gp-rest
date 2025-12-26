@@ -45,6 +45,7 @@ function gp_init() {
 	require_once __DIR__ . '/src/trait-gp-profile-helper.php';
 	require_once __DIR__ . '/src/trait-gp-responses-helper.php';
 
+	require_once __DIR__ . '/src/class-gp-options.php';
 	require_once __DIR__ . '/src/class-gp-rest-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-formats-controller.php';
 	require_once __DIR__ . '/src/class-gp-rest-glossaries-controller.php';
