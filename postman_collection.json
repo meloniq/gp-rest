@@ -382,6 +382,16 @@
 								{
 									"key": "project_id",
 									"value": "{{project_id}}"
+								},
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "per_page",
+									"value": "5",
+									"disabled": true
 								}
 							]
 						}
@@ -760,6 +770,88 @@
 		{
 			"name": "translations",
 			"item": [
+				{
+					"name": "[GET] Translations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}{{api_namespace}}/translations?project_id={{project_id}}&translation_set_id={{set_id}}",
+							"host": [
+								"{{api_url}}{{api_namespace}}"
+							],
+							"path": [
+								"translations"
+							],
+							"query": [
+								{
+									"key": "project_id",
+									"value": "{{project_id}}"
+								},
+								{
+									"key": "translation_set_id",
+									"value": "{{set_id}}"
+								},
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "per_page",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "sort_by",
+									"value": "priority",
+									"disabled": true
+								},
+								{
+									"key": "sort_order",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "filters_term",
+									"value": "Format",
+									"disabled": true
+								},
+								{
+									"key": "filters_case_sensitive",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "filters_term_scope",
+									"value": "scope_any",
+									"disabled": true
+								},
+								{
+									"key": "filters_status",
+									"value": "waiting",
+									"disabled": true
+								},
+								{
+									"key": "filters_options[]",
+									"value": "with_plural",
+									"disabled": true
+								},
+								{
+									"key": "filters_options[]",
+									"value": "with_context",
+									"disabled": true
+								},
+								{
+									"key": "filters_user_login",
+									"value": "admin",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "[POST] Translation - New",
 					"request": {
