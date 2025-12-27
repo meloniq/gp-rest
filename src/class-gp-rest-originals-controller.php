@@ -21,6 +21,21 @@ use WP_REST_Server;
 class GP_REST_Originals_Controller extends GP_REST_Controller {
 
 	use GP_Responses_Helper;
+	use GP_Query_Params_Helper;
+
+	/**
+	 * Items per page for query.
+	 *
+	 * @var int
+	 */
+	protected $query_limit = 20;
+
+	/**
+	 * Offset for query.
+	 *
+	 * @var int
+	 */
+	protected $query_offset = 0;
 
 	/**
 	 * Constructor.
@@ -100,7 +115,15 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 			return $this->response_404_project_not_found();
 		}
 
+		$total_items = GP::$original->count_by_project_id( $project_id, 'total' );
+
+		$page     = $request->get_param( 'page' ) ? absint( $request->get_param( 'page' ) ) : 1;
+		$per_page = $this->get_items_per_page_limit( $request );
+		$offset   = ( $page - 1 ) * $per_page;
+
+		$this->add_filter_pagination_query( $offset, $per_page );
 		$originals = GP::$original->by_project_id( $project_id );
+		$this->remove_filter_pagination_query();
 
 		$data = array();
 		foreach ( $originals as $original ) {
@@ -108,10 +131,12 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 			$data[] = $this->prepare_response_for_collection( $item );
 		}
 
+		$max_pages = ceil( $total_items / $per_page );
+
 		$response = rest_ensure_response( $data );
 
-		$total_items = count( $data );
 		$response->header( 'X-WP-Total', $total_items );
+		$response->header( 'X-WP-TotalPages', $max_pages );
 
 		return $response;
 	}
@@ -350,5 +375,45 @@ class GP_REST_Originals_Controller extends GP_REST_Controller {
 		$this->schema = $schema;
 
 		return $this->add_additional_fields_schema( $this->schema );
+	}
+
+	/**
+	 * Add filter for pagination query.
+	 *
+	 * @param int $offset Offset.
+	 * @param int $limit  Limit.
+	 *
+	 * @return void
+	 */
+	protected function add_filter_pagination_query( $offset, $limit ) {
+		$this->query_limit  = $limit;
+		$this->query_offset = $offset;
+
+		add_filter( 'query', array( $this, 'add_pagination_to_query' ) );
+	}
+
+	/**
+	 * Remove filter for pagination query.
+	 *
+	 * @return void
+	 */
+	protected function remove_filter_pagination_query() {
+		remove_filter( 'query', array( $this, 'add_pagination_to_query' ) );
+	}
+
+	/**
+	 * Add pagination to query.
+	 *
+	 * @param string $query Query to modify.
+	 *
+	 * @return string Modified query.
+	 */
+	public function add_pagination_to_query( $query ) {
+		// if query contains LIMIT clause, return as is.
+		if ( false !== stripos( $query, 'LIMIT' ) ) {
+			return $query;
+		}
+
+		return $query . ' LIMIT ' . esc_sql( $this->query_limit ) . ' OFFSET ' . esc_sql( $this->query_offset );
 	}
 }
