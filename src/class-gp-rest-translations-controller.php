@@ -9,6 +9,7 @@ namespace Meloniq\GpRest;
 
 use GP;
 use GP_Locales;
+use GP_Options;
 use GP_Translation;
 use WP_REST_Response;
 use WP_REST_Request;
@@ -22,6 +23,7 @@ use WP_REST_Server;
 class GP_REST_Translations_Controller extends GP_REST_Controller {
 
 	use GP_Responses_Helper;
+	use GP_Query_Params_Helper;
 
 	/**
 	 * Constructor.
@@ -137,7 +139,9 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 		GP::$translation->per_page = $this->get_items_per_page_limit( $request );
 
 		$translations = GP::$translation->for_translation( $project, $translation_set, $page, $filters, $sort );
-		$total_items  = GP::$translation->found_rows;
+
+		$total_items = GP::$translation->found_rows;
+		$max_pages   = ceil( $total_items / GP::$translation->per_page );
 
 		$data = array();
 		foreach ( $translations as $translation ) {
@@ -148,6 +152,7 @@ class GP_REST_Translations_Controller extends GP_REST_Controller {
 		$response = rest_ensure_response( $data );
 
 		$response->header( 'X-WP-Total', $total_items );
+		$response->header( 'X-WP-TotalPages', $max_pages );
 
 		return $response;
 	}
