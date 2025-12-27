@@ -18,6 +18,13 @@ use GP_Translation_set;
 trait GP_Profile_Helper {
 
 	/**
+	 * Cache of user translation counts for sets.
+	 *
+	 * @var array
+	 */
+	protected $counts = array();
+
+	/**
 	 * Gets an array of recent translation sets the user has worked on.
 	 *
 	 * @param WP_User $user   A user object.
@@ -61,11 +68,11 @@ trait GP_Profile_Helper {
 
 				$translation_set->set_id       = $set->id;
 				$translation_set->last_updated = $translation->date_added;
-				$translation_set->count        = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->gp_translations WHERE user_id = %s AND status != 'rejected' AND translation_set_id = %s", $user->ID, $translation->translation_set_id ) );
+				$translation_set->count        = $this->get_user_translation_count_for_set( $user->ID, $set->id );
 
 				$translation_sets[] = $translation_set;
 
-				$i++;
+				++$i;
 
 				// Bail early if we have already the amount requested.
 				if ( $i >= $amount ) {
@@ -75,6 +82,38 @@ trait GP_Profile_Helper {
 		}
 
 		return $translation_sets;
+	}
+
+	/**
+	 * Gets the total number of translations a user has contributed to translation set.
+	 *
+	 * @param int $user_id The user ID.
+	 * @param int $set_id  The translation set ID.
+	 *
+	 * @return int $count The total number of translations
+	 */
+	protected function get_user_translation_count_for_set( $user_id, $set_id ) {
+		global $wpdb;
+
+		if ( isset( $this->counts[ $user_id ][ $set_id ] ) ) {
+			return $this->counts[ $user_id ][ $set_id ];
+		}
+
+		$count = (int) $wpdb->get_var( // phpcs:ignore
+			$wpdb->prepare(
+				"SELECT COUNT(*)
+				FROM $wpdb->gp_translations
+				WHERE user_id = %d
+				AND translation_set_id = %d
+				AND status != 'rejected'",
+				$user_id,
+				$set_id
+			)
+		);
+
+		$this->counts[ $user_id ][ $set_id ] = $count;
+
+		return $count;
 	}
 
 	/**
