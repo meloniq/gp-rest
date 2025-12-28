@@ -1207,6 +1207,20 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "[GET] Base - API availability",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}{{api_namespace}}",
+					"host": [
+						"{{api_url}}{{api_namespace}}"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {
